@@ -130,7 +130,7 @@
 
   {%- if section.blocks.size > 0 or section.settings.newsletter_enable or show_social_row or section.settings.enable_follow_on_shop -%}
     {%- unless only_empty_brand -%}
-      <div class="footer-premium__content-top page-width">
+      <div class="footer-premium__content-top page-width{% if section.blocks.size > 0 and section.settings.newsletter_enable %} footer-premium__content-top--with-newsletter{% endif %}">
         {%- if section.blocks.size > 0 -%}
           {%- liquid
             assign footer_columns = 0
@@ -528,6 +528,13 @@
           <p class="footer-premium__legal-info">{{ legal_info | escape }}</p>
         {%- endif -%}
       </div>
+    </div>
+    <div class="footer-premium__credit page-width">
+      <p class="footer-premium__credit-text">
+        <span>DESIGNED &amp; DEVELOPED BY <a href="https://equantum.com.py/" target="_blank" rel="noopener noreferrer" aria-describedby="a11y-new-window-message">eQuantum Consulting</a></span>
+        <span class="footer-premium__credit-separator" aria-hidden="true">|</span>
+        <span>ECOMMERCE &amp; DIGITAL SOLUTIONS</span>
+      </p>
     </div>
   </div>
 </footer>
