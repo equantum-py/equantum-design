@@ -76,7 +76,8 @@ Categorías 800x1000.
 {% assign category_count = 0 %}{% for block in section.blocks %}{% if block.type == 'category' %}{% assign category_count = category_count | plus: 1 %}{% endif %}{% endfor %}
 {% if category_count > 0 %}<section class="um-premium__section"><div class="um-premium__wrap"><h2>{{ section.settings.category_heading | escape }}</h2><div class="um-premium__categories">{% for block in section.blocks %}{% if block.type == 'category' %}{% assign um_category_collection = block.settings.collection %}
 {% if um_category_collection == blank %}
-  {% case block.settings.title | downcase %}
+  {% assign um_category_title = block.settings.title | downcase %}
+  {% case um_category_title %}
     {% when 'hombre' %}{% assign um_category_collection = collections['cruise-star-hombres'] %}
     {% when 'mujer' %}{% assign um_category_collection = collections['cruise-lady-mujer'] %}
     {% when 'deportivo' %}{% assign um_category_collection = collections['ocean-victory-men'] %}
@@ -88,7 +89,8 @@ Categorías 800x1000.
 {% assign category_url = block.settings.link | default: um_category_collection.url | default: '#' %}
 {% assign category_image = block.settings.image | default: um_category_collection.featured_image %}
 {% if category_image == blank %}
-  {% case block.settings.title | downcase %}
+  {% assign um_category_title = block.settings.title | downcase %}
+  {% case um_category_title %}
     {% when 'hombre' %}{% assign category_image = images['TechnoMarine_Cruise_Chronograph_Watch.png'] %}
     {% when 'mujer' %}{% assign category_image = images['Pink_TechnoMarine_Cruise_Chronograph_Watch.png'] %}
     {% when 'deportivo' %}{% assign category_image = images['TechnoMarine_Blue_Chronograph_Watch.png'] %}
