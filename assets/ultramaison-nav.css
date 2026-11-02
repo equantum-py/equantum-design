@@ -1,0 +1,1487 @@
+/*
+ * Ultra Maison — megamenú V3 "vitrina".
+ * Escritorio: <um-nav-mega> (≥ 990px). Celular: .umv3-d dentro del drawer de Dawn (< 990px).
+ * Identidad: navy #0f1f43, tinta #39445e, gris #8a8f98, líneas #edf0f4, fondo suave #f4f6fa.
+ */
+
+um-nav-mega {
+  display: none;
+}
+
+/* ───────────── Escritorio ───────────── */
+@media screen and (min-width: 990px) {
+  .section-header .header > um-nav-mega {
+    grid-area: nav;
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Si no entran todas las categorías pasan a una segunda línea: nunca se ocultan */
+  .section-header .umv3__nav > .list-menu {
+    flex-wrap: wrap !important;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .umv3__top,
+  .umv3__top span {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* Flecha de la categoría: espacio propio, nunca encima del texto */
+  .section-header .umv3__nav summary.umv3__top {
+    padding-right: 30px !important;
+  }
+
+  .umv3__top .icon-caret {
+    right: 12px;
+  }
+
+  .umv3__details[open] > summary .icon-caret {
+    transform: rotate(180deg);
+  }
+
+  .umv3__item,
+  .umv3__details {
+    position: static;
+  }
+
+  .umv3__details > summary {
+    position: relative;
+  }
+
+  .umv3__details > summary::after {
+    content: '';
+    position: absolute;
+    left: 18px;
+    right: 30px;
+    bottom: -1px;
+    height: 1px;
+    background: #0f1f43;
+    transform: scaleX(0);
+    transition: transform 0.25s ease;
+  }
+
+  .umv3__details[open] > summary::after {
+    transform: scaleX(1);
+  }
+
+  .umv3__top--hl,
+  .umv3__top--hl span {
+    color: var(--umv3-hl, #b3261e);
+  }
+
+  .umv3__top--hl::after {
+    background: var(--umv3-hl, #b3261e) !important;
+  }
+
+  .umv3__notice {
+    flex-basis: 100%;
+    margin: 4px 0;
+    padding: 6px 10px;
+    border-radius: 4px;
+    background: #fff5d6;
+    color: #5c4300;
+    font-size: 12px;
+  }
+
+  .umv3__panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    max-height: calc(100vh - var(--umv3-top, 160px) - 12px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: #ffffff;
+    border-top: 1px solid #edf0f4;
+    box-shadow: 0 30px 50px -34px rgba(15, 31, 67, 0.28);
+  }
+
+  .umv3__details[open] > .umv3__panel {
+    animation: umv3In 0.22s ease both;
+  }
+
+  .umv3__inner {
+    display: grid;
+    grid-template-columns: 236px minmax(0, 1fr);
+    align-items: stretch;
+    gap: 44px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 34px 40px 38px;
+  }
+
+  .umv3__inner--side {
+    grid-template-columns: 236px minmax(0, 1fr) minmax(250px, 300px);
+  }
+
+  /* Columna izquierda: categoría, familias, accesos y "Explorar" */
+  .umv3__aside {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-right: 28px;
+    border-right: 1px solid #edf0f4;
+  }
+
+  .umv3__cat {
+    margin: 0 0 6px;
+    font-family: var(--font-heading-family);
+    font-size: 28px;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+    color: #0f1f43;
+  }
+
+  .umv3__cat--hl {
+    color: var(--umv3-hl, #b3261e);
+  }
+
+  .umv3__intro {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #39445e;
+  }
+
+  .umv3__label {
+    margin: 14px 0 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #8a8f98;
+  }
+
+  .umv3__aside-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .umv3__aside-list--quick {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #edf0f4;
+  }
+
+  .umv3__aside-link,
+  .umv3__family {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0 7px 14px;
+    font-size: 14.5px;
+    line-height: 1.35;
+    color: #39445e;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .umv3__aside-link {
+    padding-left: 0;
+    font-size: 13.5px;
+  }
+
+  .umv3__family::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 2px;
+    height: 0;
+    background: #0f1f43;
+    transform: translateY(-50%);
+    transition: height 0.2s ease;
+  }
+
+  .umv3__aside-link:hover,
+  .umv3__family:hover {
+    color: #0f1f43;
+  }
+
+  .umv3__family.is-active {
+    color: #0f1f43;
+    font-weight: 600;
+  }
+
+  .umv3__family.is-active::before {
+    height: 18px;
+  }
+
+  .umv3__count {
+    margin-left: auto;
+    font-size: 11px;
+    color: #8a8f98;
+    font-weight: 400;
+  }
+
+  .umv3__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: auto;
+    padding: 13px 16px;
+    background: #0f1f43;
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+
+  .umv3__aside > .umv3__cta {
+    margin-top: 24px;
+  }
+
+  .umv3__cta:hover {
+    background: #1d3166;
+  }
+
+  .umv3__cta--hl {
+    background: var(--umv3-hl, #b3261e);
+  }
+
+  .umv3__cta-arrow {
+    width: 7px;
+    height: 7px;
+    flex: none;
+    border-top: 1.5px solid currentColor;
+    border-right: 1.5px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.2s ease;
+  }
+
+  .umv3__cta:hover .umv3__cta-arrow {
+    transform: translateX(3px) rotate(45deg);
+  }
+
+  /* Vitrina central */
+  .umv3__stage {
+    min-width: 0;
+  }
+
+  .umv3__view[hidden] {
+    display: none;
+  }
+
+  .umv3__view {
+    animation: umv3Fade 0.2s ease both;
+  }
+
+  .umv3__view-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .umv3__view-title {
+    margin: 0;
+    font-family: var(--font-heading-family);
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    color: #0f1f43;
+  }
+
+  .umv3__view-link {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: #39445e;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    white-space: nowrap;
+  }
+
+  .umv3__view-link:hover {
+    color: #0f1f43;
+  }
+
+  .umv3__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    /* Hasta "Colecciones por fila" columnas; nunca tarjetas de menos de 140px (con poco ancho, menos columnas) */
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(max(140px, calc((100% - (var(--umv3-cols, 4) - 1) * 20px) / var(--umv3-cols, 4))), 1fr)
+    );
+    gap: 26px 20px;
+  }
+
+  .umv3__grid--list,
+  .umv3__inner--side .umv3__grid--list {
+    display: block;
+    columns: var(--umv3-cols, 4) 160px;
+    column-gap: 32px;
+  }
+
+  .umv3__grid--list > li {
+    break-inside: avoid;
+  }
+
+  .umv3__az {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    columns: 4 150px;
+    column-gap: 32px;
+  }
+
+  .umv3__az > li {
+    break-inside: avoid;
+  }
+
+  .umv3__az-letter {
+    margin: 12px 0 2px;
+    font-family: var(--font-heading-family);
+    font-size: 15px;
+    color: #0f1f43;
+  }
+
+  .umv3__az-letter:first-child {
+    margin-top: 0;
+  }
+
+  /* Columna derecha: relojes destacados y promoción */
+  .umv3__side {
+    padding-left: 28px;
+    border-left: 1px solid #edf0f4;
+    min-width: 0;
+  }
+
+  .umv3-feat--side .umv3-feat__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .umv3-feat--side .umv3-feat__card {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+  }
+
+  /* Categoría sin subelementos (NOVEDADES, OFERTAS): relojes y promoción ocupan la vitrina */
+  .umv3-feat--stage.umv3-feat--has-promo {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(240px, 1.35fr);
+    align-items: start;
+    gap: 36px;
+  }
+
+  .umv3-feat--stage .umv3-feat__grid {
+    gap: 22px;
+  }
+
+  .umv3-feat--stage .umv3-feat__title {
+    font-size: 14px;
+  }
+
+  .umv3-feat--stage .umv3-feat__price {
+    font-size: 13px;
+  }
+
+  .umv3-feat--stage .umv3-promo {
+    margin-top: 0;
+  }
+}
+
+@keyframes umv3In {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes umv3Fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ───────────── Comunes (escritorio y celular) ───────────── */
+.umv3__eyebrow {
+  display: block;
+  margin: 0 0 12px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8a8f98;
+}
+
+/* Tarjeta de colección */
+.umv3-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.umv3-card__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--umv3-media-bg, #f6f6f4);
+}
+
+.umv3-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  transition: transform 0.45s ease;
+}
+
+.umv3-card:hover .umv3-card__img {
+  transform: scale(1.05);
+}
+
+/* Sin foto (URL escrita a mano): tarjeta tipográfica, nunca un recuadro gris vacío */
+.umv3-card__mono {
+  position: absolute;
+  inset: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border: 1px solid rgba(15, 31, 67, 0.14);
+  font-family: var(--font-heading-family);
+  font-size: 16px;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: #0f1f43;
+  overflow-wrap: anywhere;
+}
+
+.umv3-card--text .umv3-card__media {
+  background: linear-gradient(160deg, #f4f6fa 0%, #e9edf4 100%);
+}
+
+.umv3-card .umv3__line-name {
+  padding: 0;
+  font-size: 13.5px;
+  color: #0f1f43;
+}
+
+/* Línea de colección (lista compacta, A–Z y pie de tarjeta) */
+.umv3__line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.umv3__line-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 1.35;
+  color: #39445e;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.umv3__line-name:hover,
+.umv3__line-name[aria-current='page'],
+.umv3-card:hover .umv3__line-name {
+  color: #0f1f43;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.umv3__chips {
+  display: inline-flex;
+  gap: 4px;
+  flex: none;
+}
+
+.umv3__chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 6px;
+  border: 1px solid #dfe3ea;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #39445e;
+  text-decoration: none;
+}
+
+.umv3__chip:hover {
+  border-color: #0f1f43;
+  color: #0f1f43;
+}
+
+/* Relojes destacados */
+.umv3-feat__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--umv3-feat-cols, 3), minmax(0, 1fr));
+  gap: 14px;
+}
+
+.umv3-feat__card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #0f1f43;
+  text-decoration: none;
+}
+
+.umv3-feat__media {
+  display: block;
+  aspect-ratio: 1;
+  background: var(--umv3-media-bg, #f6f6f4);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.umv3-feat__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  transition: transform 0.45s ease;
+}
+
+.umv3-feat__card:hover .umv3-feat__img {
+  transform: scale(1.05);
+}
+
+.umv3-feat__body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.umv3-feat__title {
+  font-size: 13px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.umv3-feat__card:hover .umv3-feat__title {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.umv3-feat__price {
+  font-size: 12.5px;
+  color: #39445e;
+}
+
+.umv3-feat__price s {
+  margin-right: 6px;
+  color: #8a8f98;
+}
+
+.umv3-feat__soldout {
+  font-size: 11px;
+  color: #8a8f98;
+}
+
+/* Promoción */
+.umv3-promo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 22px;
+  color: #0f1f43;
+  text-decoration: none;
+}
+
+.umv3-feat > .umv3-promo:first-child {
+  margin-top: 0;
+}
+
+.umv3-promo__media {
+  display: block;
+  aspect-ratio: 4 / 5;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #f4f6fa;
+}
+
+.umv3-feat--side .umv3-promo__media {
+  aspect-ratio: 16 / 11;
+}
+
+.umv3-promo__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+a.umv3-promo:hover .umv3-promo__img {
+  transform: scale(1.03);
+}
+
+.umv3-promo--text {
+  padding: 22px;
+  background: #0f1f43;
+  border-radius: 4px;
+  color: #ffffff;
+}
+
+.umv3-promo--text .umv3__eyebrow,
+.umv3-promo--text .umv3-promo__text {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.umv3-promo__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.umv3-promo__body .umv3__eyebrow {
+  margin: 0;
+}
+
+.umv3-promo__title {
+  font-family: var(--font-heading-family);
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.umv3-promo__text {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #39445e;
+}
+
+.umv3-promo__button {
+  margin-top: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ───────────── Celular (drawer) ───────────── */
+.umv3-d {
+  padding: 0 0 24px;
+  overflow-x: hidden;
+}
+
+.umv3-d um-nav-drawer {
+  display: block;
+}
+
+/* Pestañas deslizables: admiten cualquier cantidad de categorías */
+.umv3-d__tabs {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  gap: 4px;
+  padding: 10px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: rgb(var(--color-background, 255, 255, 255));
+  border-bottom: 1px solid #edf0f4;
+  scroll-padding-inline: 16px;
+  /* Desvanecido a la derecha: indica que hay más categorías al deslizar */
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+}
+
+.umv3-d__tabs[data-end] {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.umv3-d__tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.menu-drawer .umv3-d__tab {
+  flex: none;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid #edf0f4;
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #39445e;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+.menu-drawer .umv3-d__tab--hl {
+  color: var(--umv3-hl, #b3261e);
+}
+
+.menu-drawer .umv3-d__tab[aria-selected='true'] {
+  background: #0f1f43;
+  border-color: #0f1f43;
+  color: #ffffff;
+}
+
+.menu-drawer .umv3-d__tab--hl[aria-selected='true'] {
+  background: var(--umv3-hl, #b3261e);
+  border-color: var(--umv3-hl, #b3261e);
+}
+
+.umv3-d__panel[hidden],
+.umv3-d__fam[hidden] {
+  display: none;
+}
+
+.umv3-d__intro {
+  margin: 14px 20px 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #39445e;
+}
+
+.umv3-d__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 50px;
+  padding: 0 20px;
+  font-size: 15px;
+  color: #39445e;
+  text-decoration: none;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.umv3-d__row--strong {
+  color: #0f1f43;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.umv3-d__row--hl {
+  color: var(--umv3-hl, #b3261e);
+}
+
+.umv3-d__arrow,
+.umv3-d__chev {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.umv3-d__chev {
+  transform: rotate(135deg);
+  transition: transform 0.2s ease;
+  margin-left: 4px;
+}
+
+.umv3-d__acc-btn[aria-expanded='true'] .umv3-d__chev {
+  transform: rotate(-45deg);
+}
+
+.menu-drawer .umv3-d__acc-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 20px;
+  border: 0;
+  border-bottom: 1px solid #edf0f4;
+  background: transparent;
+  font: inherit;
+  font-family: var(--font-heading-family);
+  font-size: 17px;
+  color: #0f1f43;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menu-drawer .umv3-d__acc-btn:hover,
+.menu-drawer .umv3-d__acc-btn:focus {
+  background: transparent;
+  box-shadow: none;
+}
+
+.menu-drawer .umv3-d__acc-btn[aria-expanded='true'] {
+  border-bottom-color: transparent;
+}
+
+.umv3-d__acc-btn > span:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.menu-drawer .umv3-d__acc-btn--top {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.menu-drawer .umv3-d__acc-btn--hl {
+  color: var(--umv3-hl, #b3261e);
+}
+
+.umv3-d__count {
+  font-family: var(--font-body-family);
+  font-size: 12px;
+  color: #8a8f98;
+}
+
+.umv3-d__fam {
+  padding-bottom: 14px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+/* Fila deslizable de colecciones: tarjetas con foto en lugar de listas largas */
+.umv3-d__rail {
+  list-style: none;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 128px;
+  gap: 12px;
+  margin: 0;
+  padding: 4px 20px 6px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 20px;
+  scrollbar-width: none;
+}
+
+.umv3-d__rail::-webkit-scrollbar {
+  display: none;
+}
+
+.umv3-d__rail > li {
+  scroll-snap-align: start;
+}
+
+.umv3-d__rail--flat {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.umv3-d__rail .umv3-card__mono {
+  inset: 8px;
+  font-size: 14px;
+}
+
+.umv3-d__rail .umv3__line {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.umv3-d__rail .umv3__line-name {
+  display: block;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.umv3-d .umv3__chip {
+  min-width: 32px;
+  height: 32px;
+  font-size: 11px;
+}
+
+/* Lista compacta (opción "Lista compacta") */
+.umv3-d__rail--list {
+  display: block;
+  padding: 0 20px 0 32px;
+  overflow: visible;
+}
+
+.umv3-d__rail--list .umv3__line {
+  flex-direction: row;
+  align-items: center;
+}
+
+.umv3-d__rail--list .umv3__line-name {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 15px;
+}
+
+.umv3-d__all {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 2px 20px 0;
+  font-size: 13px;
+  color: #0f1f43;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.umv3-d__quick {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0 20px;
+}
+
+.umv3-d__pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid #edf0f4;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #0f1f43;
+  text-decoration: none;
+}
+
+.umv3-d__pill--hl {
+  color: var(--umv3-hl, #b3261e);
+  border-color: currentColor;
+}
+
+/* Relojes destacados en el celular: carrusel */
+.umv3-feat--mobile {
+  padding: 20px 0 4px;
+}
+
+.umv3-feat--mobile .umv3-feat__products > .umv3__eyebrow {
+  margin: 0 20px 12px;
+}
+
+.umv3-feat--mobile .umv3-feat__grid {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: 140px;
+  gap: 12px;
+  padding: 0 20px 4px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 20px;
+  scrollbar-width: none;
+}
+
+.umv3-feat--mobile .umv3-feat__grid::-webkit-scrollbar {
+  display: none;
+}
+
+.umv3-feat--mobile .umv3-feat__grid > li {
+  scroll-snap-align: start;
+}
+
+.umv3-feat--mobile .umv3-promo {
+  margin: 18px 20px 0;
+}
+
+.umv3-feat--mobile .umv3-promo__media {
+  aspect-ratio: 16 / 10;
+}
+
+.umv3-d a:focus-visible,
+.umv3-d button:focus-visible,
+um-nav-mega a:focus-visible,
+um-nav-mega summary:focus-visible {
+  outline: 2px solid #175cff;
+  outline-offset: 2px;
+}
+
+@media screen and (max-width: 359px) {
+  .menu-drawer .umv3-d__tab {
+    padding: 0 12px;
+    letter-spacing: 0.08em;
+  }
+
+  .umv3-d__rail {
+    grid-auto-columns: 116px;
+  }
+
+  .umv3-feat--mobile .umv3-feat__grid {
+    grid-auto-columns: 124px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .umv3__details[open] > .umv3__panel,
+  .umv3__view {
+    animation: none;
+  }
+
+  .umv3__details > summary::after,
+  .umv3__family::before,
+  .umv3__cta-arrow,
+  .umv3-d__chev,
+  .umv3-card__img,
+  .umv3-feat__img,
+  .umv3-promo__img {
+    transition: none;
+  }
+}
+
+/* ───────────── Fase 3.4: vitrina compacta ─────────────
+ * Panel bajo (≤ ~420px), colecciones como índice con miniatura de 52px, relojes en filas de 64px y
+ * colores oficiales (navy en lugar del azul del tema). Aplica al menú propio y a la navegación automática.
+ */
+@media screen and (min-width: 990px) {
+  .section-header .umv3__top:hover span,
+  .section-header .umv3__details[open] > summary.umv3__top span,
+  .section-header .umv3__top .header__active-menu-item {
+    color: #0f1f43;
+  }
+
+  .section-header .umv3__top--hl:hover span,
+  .section-header .umv3__details[open] > summary.umv3__top--hl span {
+    color: var(--umv3-hl, #b3261e);
+  }
+
+  .umv3__inner {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 32px;
+    padding: 22px 40px 26px;
+  }
+
+  .umv3__inner--side {
+    grid-template-columns: 200px minmax(0, 1fr) minmax(240px, 280px);
+  }
+
+  .umv3__aside {
+    padding-right: 24px;
+  }
+
+  .umv3__cat {
+    margin-bottom: 2px;
+    font-size: 22px;
+  }
+
+  .umv3__intro {
+    margin-bottom: 8px;
+    font-size: 12.5px;
+    color: #8a8f98;
+  }
+
+  .umv3__label {
+    margin-top: 10px;
+  }
+
+  .umv3__aside-link,
+  .umv3__family {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    font-size: 13.5px;
+  }
+
+  .section-header .umv3__details[open] > summary.umv3__top .icon-caret,
+  .section-header .umv3__top:hover .icon-caret {
+    color: #0f1f43;
+  }
+
+  .section-header .umv3__top--hl .icon-caret {
+    color: var(--umv3-hl, #b3261e) !important;
+  }
+
+  /* "Explorar" justo debajo del título: sin huecos en la columna */
+  .umv3__aside > .umv3__cta {
+    align-self: flex-start;
+    margin-top: 18px;
+  }
+
+  .umv3__cta {
+    gap: 10px;
+    padding: 11px 12px;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    max-width: 100%;
+  }
+
+  .umv3__view-head {
+    margin-bottom: 10px;
+  }
+
+  .umv3__view-title {
+    font-size: 16px;
+  }
+
+  /* Índice de colecciones: miniatura + nombre, en columnas; con muchas, el índice se desplaza (no el panel) */
+  .umv3__grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 2px 18px;
+    max-height: min(340px, calc(100vh - var(--umv3-top, 160px) - 120px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #d5dae3 transparent;
+    padding: 0 4px 22px 0;
+    /* Desvanecido inferior: indica que hay más colecciones */
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 26px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 26px), transparent);
+  }
+
+  .umv3__grid .umv3__line {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 3px;
+  }
+
+  .umv3__grid .umv3__line-name {
+    overflow-wrap: normal;
+  }
+
+  .umv3__grid .umv3-card {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    padding: 5px 8px 5px 5px;
+    border-radius: 6px;
+    transition: background-color 0.15s ease;
+  }
+
+  .umv3__grid .umv3-card:hover {
+    background: #f4f6fa;
+  }
+
+  .umv3__grid .umv3-card__media {
+    width: 52px;
+  }
+
+  .umv3__grid .umv3-card__mono {
+    inset: 0;
+    padding: 0;
+    border: 0;
+    font-size: 20px;
+  }
+
+  .umv3__grid .umv3__line-name {
+    font-size: 13.5px;
+    line-height: 1.3;
+  }
+
+  .umv3__grid .umv3__chip {
+    min-width: 22px;
+    height: 20px;
+    font-size: 10px;
+  }
+
+  /* Escritorio angosto (990–1199px): columnas laterales más finas para que el índice tenga 2 columnas */
+  @media (max-width: 1199px) {
+    .umv3__inner,
+    .umv3__inner--side {
+      gap: 24px;
+      padding-left: 28px;
+      padding-right: 28px;
+    }
+
+    .umv3__inner {
+      grid-template-columns: 180px minmax(0, 1fr);
+    }
+
+    .umv3__inner--side {
+      grid-template-columns: 180px minmax(0, 1fr) 220px;
+    }
+
+    .umv3__aside {
+      padding-right: 20px;
+    }
+
+    .umv3__side {
+      padding-left: 20px;
+    }
+  }
+
+  /* Relojes destacados al costado: filas con foto de 64px, nombre y precio */
+  .umv3__side {
+    padding-left: 24px;
+  }
+
+  .umv3-feat--side .umv3-feat__grid {
+    gap: 8px;
+  }
+
+  .umv3-feat--side .umv3-feat__card {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .umv3-feat--side .umv3-feat__title {
+    font-size: 12.5px;
+  }
+
+  .umv3-feat--side .umv3-promo {
+    margin-top: 14px;
+  }
+
+  .umv3-feat--side .umv3-promo__media {
+    aspect-ratio: 16 / 7;
+  }
+
+  /* NOVEDADES / OFERTAS: hasta 4 relojes de 170px como máximo */
+  .umv3-feat--stage .umv3-feat__grid {
+    grid-template-columns: repeat(var(--umv3-feat-cols, 3), minmax(0, 170px));
+    gap: 20px;
+  }
+
+  .umv3-feat--stage.umv3-feat--has-promo {
+    grid-template-columns: auto minmax(220px, 300px);
+    justify-content: start;
+  }
+
+  .umv3-feat--stage .umv3-promo__media {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* Celular: colecciones en mosaico de 3 (6 visibles, el resto detrás de "Ver todas") */
+.umv3-d__tiles {
+  list-style: none;
+  margin: 0;
+  padding: 12px 20px 4px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 10px;
+}
+
+.umv3-d__tiles .umv3-card {
+  gap: 6px;
+}
+
+.umv3-d__tiles .umv3-card__mono {
+  inset: 0;
+  padding: 0;
+  border: 0;
+  font-size: 22px;
+}
+
+.umv3-d__tiles .umv3__line {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.umv3-d__tiles .umv3__line-name {
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.3;
+  color: #0f1f43;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.umv3-d__tiles .umv3__chip {
+  min-width: 30px;
+  height: 26px;
+}
+
+.umv3-d__more {
+  margin: 6px 20px 0;
+}
+
+.menu-drawer .umv3-d__more .umv3-d__acc-btn {
+  min-height: 44px;
+  padding: 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #0f1f43;
+  border-top: 1px solid #edf0f4;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.umv3-d__more .umv3-d__tiles {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.umv3-d__label {
+  margin: 18px 20px 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8a8f98;
+}
+
+.umv3-d__quick--inline {
+  margin-top: 8px;
+}
+
+/* Menú propio en el celular: tarjetas de las filas deslizables más chicas */
+.umv3-d__rail {
+  grid-auto-columns: 104px;
+}
+
+.umv3-feat--mobile .umv3-feat__grid {
+  grid-auto-columns: 112px;
+}
+
+/* ───────────── Fase 3.5: fotos reales sin recuadros grises ─────────────
+ * Las fotos del catálogo son de estilo de vida (reloj en la muñeca), en vertical o cuadradas. Con
+ * "contain" + multiply quedaban bandas grises a los costados y, mientras cargaban, un recuadro gris vacío.
+ * Ahora: la foto llena su cuadro (cover) y debajo hay siempre una inicial sobre el fondo de la marca.
+ */
+.umv3-card__media,
+.umv3-feat__media {
+  position: relative;
+  background: linear-gradient(160deg, #f4f6fa 0%, #e7ecf4 100%);
+}
+
+.umv3-card__img,
+.umv3-feat__img {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: normal;
+}
+
+.umv3-card__mono,
+.umv3__grid .umv3-card__mono,
+.umv3-d__tiles .umv3-card__mono,
+.umv3-d__rail .umv3-card__mono {
+  inset: 0;
+  z-index: 0;
+  padding: 0;
+  border: 0;
+  color: rgba(15, 31, 67, 0.42);
+}
+
+.umv3-feat__ph {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading-family);
+  font-size: 13px;
+  letter-spacing: 0.24em;
+  color: rgba(15, 31, 67, 0.32);
+}
+
+.umv3__line-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.umv3__line-meta {
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: #8a8f98;
+  white-space: nowrap;
+}
+
+@media screen and (min-width: 990px) {
+  /* Colecciones protagonistas: miniatura de 60px con la foto real, nombre y cantidad de relojes */
+  .umv3__grid {
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 6px 18px;
+  }
+
+  .umv3__grid .umv3-card {
+    grid-template-columns: 60px minmax(0, 1fr);
+    gap: 14px;
+    padding: 6px 10px 6px 6px;
+  }
+
+  .umv3__grid .umv3-card__media {
+    width: 60px;
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(15, 31, 67, 0.06);
+  }
+
+  .umv3__grid .umv3-card:hover .umv3-card__media {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 3px #0f1f43;
+  }
+
+  .umv3__grid .umv3__line-name {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .umv3-feat--side .umv3-feat__card {
+    grid-template-columns: 60px minmax(0, 1fr);
+  }
+
+  .umv3-feat__media {
+    border-radius: 6px;
+  }
+}
+
+.umv3-d__tiles .umv3-card__media {
+  border-radius: 6px;
+}
+
+.umv3-d__tiles .umv3__line-meta {
+  font-size: 11px;
+}
+
+/* Celular: el nombre del reloj en 3 líneas para que se vea la medida ("… Lady 36.5mm"), que es lo que
+   distingue a relojes de la misma línea */
+.umv3-feat--mobile .umv3-feat__title {
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}

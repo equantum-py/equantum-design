@@ -12,6 +12,27 @@
   <link rel="stylesheet" href="{{ 'component-price.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
 
+{%- if section.settings.menu_type_desktop == 'um_mega' or section.settings.um_mobile_menu_images -%}
+  {{ 'ultramaison-mega-menu.css' | asset_url | stylesheet_tag }}
+{%- endif -%}
+{%- if section.settings.menu_type_desktop == 'um_mega' -%}
+  <script src="{{ 'ultramaison-mega-menu.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- if section.settings.menu_type_desktop == 'um_mega_v3' -%}
+  {{ 'ultramaison-nav.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'ultramaison-nav.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- liquid
+  # Hay menú si el Encabezado tiene uno. La V3 siempre tiene navegación: la de su bloque "Megamenú V3: menú"
+  # o, sin ese bloque, la automática (colecciones reales de la tienda).
+  assign um_has_menu = false
+  if section.settings.menu != blank or section.settings.menu_type_desktop == 'um_mega_v3'
+    assign um_has_menu = true
+  endif
+-%}
+
 {%- if section.settings.menu_type_desktop == 'mega' -%}
   <link rel="stylesheet" href="{{ 'component-mega-menu.css' | asset_url }}" media="print" onload="this.media='all'">
 {%- endif -%}
@@ -164,14 +185,14 @@
       assign language_selector = true
     endif
   -%}
-  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if section.settings.menu != blank %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
+  <header class="header header--{{ section.settings.logo_position }} header--mobile-{{ section.settings.mobile_logo_position }} page-width{% if section.settings.menu_type_desktop == 'drawer' %} drawer-menu{% endif %}{% if um_has_menu %} header--has-menu{% endif %}{% if has_app_block %} header--has-app{% endif %}{% if social_links %} header--has-social{% endif %}{% if shop.customer_accounts_enabled %} header--has-account{% endif %}{% if country_selector or language_selector %} header--has-localizations{% endif %}">
     {%- liquid
       assign render_search_left = false
-      if section.settings.logo_position == 'top-center' or section.settings.menu == blank or shop.customer_accounts_enabled
+      if section.settings.logo_position == 'top-center' or um_has_menu == false or shop.customer_accounts_enabled
         assign render_search_left = true
       endif
 
-      if section.settings.menu != blank
+      if um_has_menu
         render 'header-drawer', show_country_selector: country_selector, show_language_selector: language_selector, show_social_links: social_links
       endif
 
@@ -179,6 +200,10 @@
         render 'header-search', input_id: 'Search-In-Modal-1'
       endif
     -%}
+
+    <div class="um-header-search-slot">
+      {% render 'ultramaison-header-search' %}
+    </div>
 
     {%- if section.settings.logo_position != 'middle-center' -%}
       {%- if request.page_type == 'index' -%}
@@ -214,9 +239,13 @@
     {%- endif -%}
 
     {%- liquid
-      if section.settings.menu != blank
+      if um_has_menu
         if section.settings.menu_type_desktop == 'dropdown'
           render 'header-dropdown-menu'
+        elsif section.settings.menu_type_desktop == 'um_mega'
+          render 'ultramaison-mega-menu', section: section
+        elsif section.settings.menu_type_desktop == 'um_mega_v3'
+          render 'ultramaison-nav-mega', section: section
         elsif section.settings.menu_type_desktop != 'drawer'
           render 'header-mega-menu'
         endif
@@ -502,7 +531,7 @@
 {
   "name": "t:sections.header.name",
   "class": "section-header",
-  "max_blocks": 3,
+  "max_blocks": 16,
   "settings": [
     {
       "type": "select",
@@ -566,10 +595,241 @@
         {
           "value": "drawer",
           "label": "t:sections.header.settings.menu_type_desktop.options__3.label"
+        },
+        {
+          "value": "um_mega",
+          "label": "Megamenú Ultra Maison"
+        },
+        {
+          "value": "um_mega_v3",
+          "label": "Megamenú Ultra Maison V3"
         }
       ],
       "default": "dropdown",
       "label": "t:sections.header.settings.menu_type_desktop.label"
+    },
+    {
+      "type": "header",
+      "content": "Megamenú Ultra Maison"
+    },
+    {
+      "type": "paragraph",
+      "content": "Se activa eligiendo \"Megamenú Ultra Maison\" en el tipo de menú de escritorio. Las subcategorías salen del menú elegido; las imágenes, de las colecciones y productos reales enlazados."
+    },
+    {
+      "type": "range",
+      "id": "um_mega_products",
+      "min": 3,
+      "max": 5,
+      "step": 1,
+      "default": 4,
+      "label": "Relojes por subcategoría"
+    },
+    {
+      "type": "checkbox",
+      "id": "um_mega_show_price",
+      "default": true,
+      "label": "Mostrar precios en el megamenú"
+    },
+    {
+      "type": "color",
+      "id": "um_mega_image_bg",
+      "default": "#f6f6f4",
+      "label": "Fondo de las imágenes"
+    },
+    {
+      "type": "checkbox",
+      "id": "um_mobile_menu_images",
+      "default": false,
+      "label": "Mostrar miniaturas en el menú móvil",
+      "info": "Agrega la imagen de cada colección y un enlace \"Ver todo\" dentro de las categorías del menú móvil."
+    },
+    {
+      "type": "header",
+      "content": "Megamenú Ultra Maison V3"
+    },
+    {
+      "type": "paragraph",
+      "content": "Se activa eligiendo \"Megamenú Ultra Maison V3\" en el tipo de menú de escritorio (también cambia el menú del celular). Sin configurar nada muestra HOMBRE | MUJER | COLECCIONES | NOVEDADES | OFERTAS con las colecciones reales de la tienda y los destinos del menú del Encabezado. Para armarla a mano, agregá el bloque \"Megamenú V3: menú\" con un menú propio. Relojes destacados y promociones: bloques \"Megamenú V3: vitrina\". Para volver a la versión anterior, elegí \"Megamenú Ultra Maison\"."
+    },
+    {
+      "type": "select",
+      "id": "um_v3_trigger",
+      "label": "Apertura en escritorio",
+      "default": "hover",
+      "options": [
+        {
+          "value": "hover",
+          "label": "Al pasar el mouse"
+        },
+        {
+          "value": "click",
+          "label": "Al hacer clic"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "um_v3_card_style",
+      "label": "Colecciones en la vitrina",
+      "default": "photo",
+      "options": [
+        {
+          "value": "photo",
+          "label": "Tarjetas con foto"
+        },
+        {
+          "value": "list",
+          "label": "Lista compacta"
+        }
+      ],
+      "info": "La foto es la de la colección enlazada en el menú. Si el ítem es una URL escrita a mano se muestra una tarjeta con el nombre."
+    },
+    {
+      "type": "range",
+      "id": "um_v3_columns",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4,
+      "label": "Colecciones por fila (escritorio)"
+    },
+    {
+      "type": "text",
+      "id": "um_v3_families_label",
+      "default": "Familias",
+      "label": "Título de la lista de familias"
+    },
+    {
+      "type": "checkbox",
+      "id": "um_v3_show_counts",
+      "default": false,
+      "label": "Mostrar cantidad de colecciones por familia"
+    },
+    {
+      "type": "text",
+      "id": "um_v3_all_prefix",
+      "default": "Explorar",
+      "label": "Texto de los enlaces para explorar",
+      "info": "Se antepone al nombre, por ejemplo: Explorar Hombre."
+    },
+    {
+      "type": "text",
+      "id": "um_v3_gender_1",
+      "default": "Hombre",
+      "label": "Categoría de género 1",
+      "info": "Nombre exacto del ítem del menú. Se usa para los accesos rápidos de la categoría de colecciones."
+    },
+    {
+      "type": "text",
+      "id": "um_v3_gender_1_short",
+      "default": "H",
+      "label": "Abreviatura del género 1"
+    },
+    {
+      "type": "text",
+      "id": "um_v3_gender_2",
+      "default": "Mujer",
+      "label": "Categoría de género 2"
+    },
+    {
+      "type": "text",
+      "id": "um_v3_gender_2_short",
+      "default": "M",
+      "label": "Abreviatura del género 2"
+    },
+    {
+      "type": "text",
+      "id": "um_v3_collections_title",
+      "default": "Colecciones",
+      "label": "Categoría de colecciones",
+      "info": "Nombre exacto del ítem del menú. Sus colecciones muestran accesos por género si existen con el mismo nombre en las categorías de género."
+    },
+    {
+      "type": "checkbox",
+      "id": "um_v3_show_az",
+      "default": true,
+      "label": "Mostrar vista \"Todas A–Z\" en la categoría de colecciones"
+    },
+    {
+      "type": "text",
+      "id": "um_v3_az_label",
+      "default": "Todas A–Z",
+      "label": "Título de la vista A–Z"
+    },
+    {
+      "type": "text",
+      "id": "um_v3_highlight_title",
+      "default": "Ofertas",
+      "label": "Categoría destacada",
+      "info": "Nombre exacto del ítem del menú que se muestra en color. Dejalo vacío para no destacar ninguno."
+    },
+    {
+      "type": "color",
+      "id": "um_v3_highlight_color",
+      "default": "#b3261e",
+      "label": "Color de la categoría destacada"
+    },
+    {
+      "type": "checkbox",
+      "id": "um_v3_mobile_tabs",
+      "default": true,
+      "label": "Pestañas en el menú del celular",
+      "info": "Las categorías con contenido se muestran como pestañas deslizables. Desactivado: como lista desplegable."
+    },
+    {
+      "type": "header",
+      "content": "Megamenú V3: navegación automática"
+    },
+    {
+      "type": "paragraph",
+      "content": "Se usa mientras no haya un bloque \"Megamenú V3: menú\". Toma las colecciones que existen en la tienda (sin crear ni cambiar nada). Una colección nueva aparece sola si su título dice Hombre o Mujer."
+    },
+    {
+      "type": "text",
+      "id": "um_v3_gender_1_source",
+      "default": "Caballeros",
+      "label": "Destino de la categoría de género 1",
+      "info": "Nombre del ítem del menú del Encabezado cuyo enlace se usa en \"Explorar Hombre\"."
+    },
+    {
+      "type": "text",
+      "id": "um_v3_gender_2_source",
+      "default": "Damas",
+      "label": "Destino de la categoría de género 2"
+    },
+    {
+      "type": "text",
+      "id": "um_v3_gender_1_words",
+      "default": "hombre, hombres, caballero, caballeros, men",
+      "label": "Palabras del género 1 en los títulos",
+      "info": "Separadas por comas. Una colección con alguna de estas palabras va a la categoría de género 1."
+    },
+    {
+      "type": "text",
+      "id": "um_v3_gender_2_words",
+      "default": "mujer, mujeres, dama, damas, women",
+      "label": "Palabras del género 2 en los títulos"
+    },
+    {
+      "type": "text",
+      "id": "um_v3_new_title",
+      "default": "Novedades",
+      "label": "Categoría de novedades",
+      "info": "Usa el enlace del ítem con este nombre en el menú del Encabezado; si no existe, todos los productos, más nuevos primero."
+    },
+    {
+      "type": "text",
+      "id": "um_v3_sale_title",
+      "default": "Ofertas",
+      "label": "Categoría de ofertas",
+      "info": "Usa el enlace del ítem con este nombre en el menú del Encabezado."
+    },
+    {
+      "type": "textarea",
+      "id": "um_v3_hidden",
+      "label": "Colecciones ocultas",
+      "info": "Títulos o handles separados por comas. No se borran de la tienda: solo no aparecen en el menú."
     },
     {
       "type": "select",
@@ -681,6 +941,151 @@
   "blocks": [
     {
       "type": "@app"
+    },
+    {
+      "type": "um_v3_menu",
+      "name": "Megamenú V3: menú",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Menú propio de la V3 (por ejemplo HOMBRE | MUJER | COLECCIONES | NOVEDADES | OFERTAS). Reemplaza a la navegación anterior solo mientras la V3 esté activa. No cambia main-menu, la V2 ni el tema publicado."
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menú de la navegación V3",
+          "info": "Nivel 1: categorías. Nivel 2: familias. Nivel 3: colecciones."
+        }
+      ]
+    },
+    {
+      "type": "um_v3_panel",
+      "name": "Megamenú V3: vitrina",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_item",
+          "label": "Categoría del menú",
+          "info": "Nombre exacto del ítem principal, por ejemplo: Hombre. Con esta vitrina, NOVEDADES u OFERTAS abren un panel aunque no tengan subelementos."
+        },
+        {
+          "type": "text",
+          "id": "intro",
+          "label": "Texto de presentación",
+          "info": "Opcional. Una línea debajo del nombre de la categoría."
+        },
+        {
+          "type": "header",
+          "content": "Productos destacados"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Destacados",
+          "label": "Título"
+        },
+        {
+          "type": "product_list",
+          "id": "products",
+          "limit": 3,
+          "label": "Productos (hasta 3)",
+          "info": "Solo se muestran productos con foto. Sin productos, la columna se oculta."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_price",
+          "default": true,
+          "label": "Mostrar precio"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_on_mobile",
+          "default": true,
+          "label": "Mostrar también en el celular"
+        },
+        {
+          "type": "header",
+          "content": "Promoción"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_promo",
+          "default": false,
+          "label": "Mostrar promoción"
+        },
+        {
+          "type": "image_picker",
+          "id": "promo_image",
+          "label": "Imagen"
+        },
+        {
+          "type": "text",
+          "id": "promo_eyebrow",
+          "label": "Antetítulo"
+        },
+        {
+          "type": "text",
+          "id": "promo_heading",
+          "label": "Título"
+        },
+        {
+          "type": "text",
+          "id": "promo_text",
+          "label": "Texto"
+        },
+        {
+          "type": "url",
+          "id": "promo_link",
+          "label": "Enlace"
+        },
+        {
+          "type": "text",
+          "id": "promo_button",
+          "default": "Descubrir",
+          "label": "Texto del enlace"
+        }
+      ]
+    },
+    {
+      "type": "um_mega_promo",
+      "name": "Destacado megamenú",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_item",
+          "label": "Categoría del menú",
+          "info": "Nombre exacto del ítem principal donde se mostrará, por ejemplo: CABALLEROS"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Antetítulo"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Título"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Enlace"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Texto del enlace",
+          "default": "Descubrir"
+        }
+      ]
     }
   ]
 }

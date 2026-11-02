@@ -20,13 +20,25 @@
             "text": "BIENVENIDO",
             "link": ""
           }
+        },
+        "announcement_Ykawdy": {
+          "type": "announcement",
+          "settings": {
+            "text": "A NUESTRA TIENDA",
+            "link": ""
+          }
         }
       },
       "block_order": [
-        "announcement-bar-0"
+        "announcement-bar-0",
+        "announcement_Ykawdy"
+      ],
+      "custom_css": [
+        "p,a {font-size: 18px !important; font-weight: 500 !important; letter-spacing: 0.01em; line-height: 1.4; text-transform: none;}",
+        "@media screen and (max-width: 749px) {p, a {font-size: 16px !important; }}"
       ],
       "settings": {
-        "auto_rotate": false,
+        "auto_rotate": true,
         "change_slides_speed": 5,
         "color_scheme": "scheme-3",
         "show_line_separator": true,
@@ -41,11 +53,31 @@
         "logo_position": "middle-left",
         "mobile_logo_position": "center",
         "menu": "main-menu",
-        "menu_type_desktop": "dropdown",
-        "sticky_header_type": "on-scroll-up",
+        "menu_type_desktop": "um_mega_v3",
+        "um_mega_products": 5,
+        "um_mega_show_price": true,
+        "um_mega_image_bg": "#f6f6f4",
+        "um_mobile_menu_images": true,
+        "um_v3_trigger": "hover",
+        "um_v3_card_style": "photo",
+        "um_v3_columns": 3,
+        "um_v3_families_label": "Familias",
+        "um_v3_show_counts": false,
+        "um_v3_all_prefix": "Ver todo",
+        "um_v3_gender_1": "Hombre",
+        "um_v3_gender_1_short": "H",
+        "um_v3_gender_2": "Mujer",
+        "um_v3_gender_2_short": "M",
+        "um_v3_collections_title": "Colecciones",
+        "um_v3_show_az": true,
+        "um_v3_az_label": "Todas A–Z",
+        "um_v3_highlight_title": "Ofertas",
+        "um_v3_highlight_color": "#b3261e",
+        "um_v3_mobile_tabs": true,
+        "sticky_header_type": "always",
         "show_line_separator": true,
         "color_scheme": "scheme-1",
-        "menu_color_scheme": "scheme-3",
+        "menu_color_scheme": "scheme-5",
         "enable_country_selector": true,
         "enable_language_selector": true,
         "margin_bottom": 0,

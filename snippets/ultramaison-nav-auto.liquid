@@ -1,0 +1,526 @@
+{% comment %}
+  Ultra Maison — megamenú V3, navegación automática: HOMBRE | MUJER | COLECCIONES | NOVEDADES | OFERTAS.
+  Se usa mientras el Encabezado no tenga el bloque "Megamenú V3: menú" con un menú elegido. No hace falta
+  configurar nada y nunca muestra la navegación anterior.
+
+  Todo sale de datos reales de la tienda (solo lectura):
+  - Colecciones de cada género: las colecciones de la tienda con "Hombre(s)" o "Mujer(es)" (palabras editables)
+    en el título; se muestran sin esa palabra y con su foto.
+  - Destinos de HOMBRE, MUJER, NOVEDADES y OFERTAS: los enlaces de esas categorías en el menú del Encabezado
+    (CABALLEROS, DAMAS, NOVEDADES, OFERTAS). Si falta alguno: HOMBRE y MUJER no muestran "Explorar";
+    NOVEDADES usa "Todos los productos" (más nuevos primero); OFERTAS sin destino ni productos no se muestra.
+  - COLECCIONES: cada colección una sola vez con accesos H / M, más los demás enlaces del menú del Encabezado
+    (ELEGANTE, DEPORTIVOS…) como "Estilos". Destino: la página de todas las colecciones.
+  - Relojes destacados: los del bloque "Megamenú V3: vitrina" de la categoría o, si no tiene productos,
+    automáticos (un reloj con foto de las primeras colecciones; NOVEDADES: los más nuevos; OFERTAS: con
+    precio rebajado).
+
+  Accepts:
+  - section: {Object} sección del encabezado (required)
+  - data: {String} resultado de 'ultramaison-nav-auto-data' (required)
+  - context: {String} 'desktop' (ítems <li> de la barra) o 'mobile' (navegación del drawer)
+
+  Usage:
+  {% render 'ultramaison-nav-auto', section: section, data: um_data, context: 'desktop' %}
+{% endcomment %}
+
+{%- liquid
+  # strip: Shopify puede dejar un salto de línea al comienzo de la salida del snippet de datos
+  assign rows = data | strip | split: '§'
+  assign all_prefix = section.settings.um_v3_all_prefix | default: 'Explorar'
+  assign g1_title = section.settings.um_v3_gender_1 | default: 'Hombre'
+  assign g2_title = section.settings.um_v3_gender_2 | default: 'Mujer'
+  assign col_title = section.settings.um_v3_collections_title | default: 'Colecciones'
+  assign new_title = section.settings.um_v3_new_title | default: 'Novedades'
+  assign sale_title = section.settings.um_v3_sale_title | default: 'Ofertas'
+  assign hl_key = section.settings.um_v3_highlight_title | handleize
+  assign cards = true
+  if section.settings.um_v3_card_style == 'list'
+    assign cards = false
+  endif
+
+  # Destinos reales: ítems de nivel 1 del menú del Encabezado (solo lectura).
+  assign g1_key = g1_title | handleize
+  assign g2_key = g2_title | handleize
+  assign g1_src = section.settings.um_v3_gender_1_source | default: 'Caballeros' | handleize
+  assign g2_src = section.settings.um_v3_gender_2_source | default: 'Damas' | handleize
+  assign col_key = col_title | handleize
+  assign new_key = new_title | handleize
+  assign sale_key = sale_title | handleize
+  assign g1_link = null
+  assign g2_link = null
+  assign new_link = null
+  assign sale_link = null
+  assign style_idx = ','
+  for link in section.settings.menu.links
+    assign k = link.title | handleize
+    if k == g1_key or k == g1_src
+      if g1_link == null
+        assign g1_link = link
+      endif
+    elsif k == g2_key or k == g2_src
+      if g2_link == null
+        assign g2_link = link
+      endif
+    elsif k == new_key
+      assign new_link = link
+    elsif k == sale_key
+      assign sale_link = link
+    elsif k != col_key and link.url != blank and link.url != '#'
+      assign style_idx = style_idx | append: forloop.index | append: ','
+    endif
+  endfor
+
+  # Colecciones agrupadas por nombre (una sola entrada aunque haya dos colecciones iguales del mismo género,
+  # p. ej. "CRUISE CALIFORNIA hombre" y "Cruise California - Hombres": se usa la de más relojes).
+  # Entrada: nombre ¦ handle H ¦ handle M ¦ handle sin género ¦ versiones ¦ relojes H ¦ relojes M ¦ relojes sin género
+  assign g1_count = 0
+  assign g2_count = 0
+  assign entries = ''
+  assign prev = ''
+  assign e_h1 = ''
+  assign e_h2 = ''
+  assign e_h0 = ''
+  assign e_c1 = 0
+  assign e_c2 = 0
+  assign e_c0 = 0
+  assign e_n = 0
+  for row in rows
+    assign p = row | split: '¦'
+    assign p_count = p[3] | plus: 0
+    if p[0] != prev and prev != ''
+      assign entries = entries | append: prev | append: '¦' | append: e_h1 | append: '¦' | append: e_h2 | append: '¦' | append: e_h0 | append: '¦' | append: e_n | append: '¦' | append: e_c1 | append: '¦' | append: e_c2 | append: '¦' | append: e_c0 | append: '§'
+      assign e_h1 = ''
+      assign e_h2 = ''
+      assign e_h0 = ''
+      assign e_c1 = 0
+      assign e_c2 = 0
+      assign e_c0 = 0
+      assign e_n = 0
+    endif
+    assign prev = p[0]
+    case p[1]
+      when '1'
+        if e_h1 == ''
+          assign g1_count = g1_count | plus: 1
+          assign e_n = e_n | plus: 1
+        endif
+        if e_h1 == '' or p_count > e_c1
+          assign e_h1 = p[2]
+          assign e_c1 = p_count
+        endif
+      when '2'
+        if e_h2 == ''
+          assign g2_count = g2_count | plus: 1
+          assign e_n = e_n | plus: 1
+        endif
+        if e_h2 == '' or p_count > e_c2
+          assign e_h2 = p[2]
+          assign e_c2 = p_count
+        endif
+      else
+        if e_h0 == ''
+          assign e_n = e_n | plus: 1
+        endif
+        if e_h0 == '' or p_count > e_c0
+          assign e_h0 = p[2]
+          assign e_c0 = p_count
+        endif
+    endcase
+  endfor
+  if prev != ''
+    assign entries = entries | append: prev | append: '¦' | append: e_h1 | append: '¦' | append: e_h2 | append: '¦' | append: e_h0 | append: '¦' | append: e_n | append: '¦' | append: e_c1 | append: '¦' | append: e_c2 | append: '¦' | append: e_c0 | append: '§'
+  endif
+  assign entries = entries | split: '§'
+
+  # Bloques "Megamenú V3: vitrina" por categoría (opcionales).
+  assign b_g1 = null
+  assign b_g2 = null
+  assign b_col = null
+  assign b_new = null
+  assign b_sale = null
+  for block in section.blocks
+    if block.type != 'um_v3_panel'
+      continue
+    endif
+    assign k = block.settings.menu_item | handleize
+    if k == g1_key or k == g1_src
+      assign b_g1 = block
+    elsif k == g2_key or k == g2_src
+      assign b_g2 = block
+    elsif k == col_key
+      assign b_col = block
+    elsif k == new_key
+      assign b_new = block
+    elsif k == sale_key
+      assign b_sale = block
+    endif
+  endfor
+
+  # Relojes automáticos (solo se usan si la vitrina de la categoría no tiene productos): de a uno por
+  # colección del género, disponibles, con foto y sin repetir nombre (el catálogo tiene varios productos con
+  # el mismo título, p. ej. un "Cruise Lady 36.5mm" por color).
+  assign um_none = '' | split: ''
+  assign f_g1 = um_none
+  assign f_g2 = um_none
+  assign f_keys_1 = '|'
+  assign f_keys_2 = '|'
+  # 1.ª pasada: un reloj por colección (variedad); 2.ª pasada: completa con otros relojes de las mismas
+  # colecciones si el género tiene pocas.
+  for pass in (1..2)
+    for row in rows
+      assign p = row | split: '¦'
+      if p[1] == '1' and f_g1.size < 3
+        assign gender = 1
+        assign f_keys = f_keys_1
+      elsif p[1] == '2' and f_g2.size < 3
+        assign gender = 2
+        assign f_keys = f_keys_2
+      else
+        continue
+      endif
+      assign c = collections[p[2]]
+      for product in c.products limit: 12
+        if product.featured_image == blank or product.available == false
+          continue
+        endif
+        assign t_key = product.title | handleize
+        assign probe = '|' | append: t_key | append: '|'
+        if f_keys contains probe
+          continue
+        endif
+        assign f_keys = f_keys | append: t_key | append: '|'
+        assign one = c.products | where: 'handle', product.handle
+        if gender == 1
+          assign f_g1 = f_g1 | concat: one
+          assign f_keys_1 = f_keys
+          if f_g1.size >= 3
+            break
+          endif
+        else
+          assign f_g2 = f_g2 | concat: one
+          assign f_keys_2 = f_keys
+          if f_g2.size >= 3
+            break
+          endif
+        endif
+        if pass == 1
+          break
+        endif
+      endfor
+      if f_g1.size >= 3 and f_g2.size >= 3
+        break
+      endif
+    endfor
+  endfor
+
+  assign new_url = routes.all_products_collection_url | append: '?sort_by=created-descending'
+  if new_link and new_link.url != blank and new_link.url != '#'
+    assign new_url = new_link.url
+  endif
+  if new_link and new_link.type == 'collection_link'
+    assign f_new = new_link.object.products
+  else
+    assign f_new = collections.all.products | sort: 'created_at' | reverse
+  endif
+
+  assign sale_url = ''
+  if sale_link and sale_link.url != blank and sale_link.url != '#'
+    assign sale_url = sale_link.url
+  endif
+  if sale_link and sale_link.type == 'collection_link'
+    assign f_sale = sale_link.object.products
+  else
+    # Rebajados reales (precio de comparación mayor al precio), con foto y sin repetir nombre
+    assign f_sale = um_none
+    assign s_keys = '|'
+    for product in collections.all.products
+      if product.compare_at_price > product.price and product.featured_image != blank
+        assign t_key = product.title | handleize
+        assign probe = '|' | append: t_key | append: '|'
+        if s_keys contains probe
+          continue
+        endif
+        assign s_keys = s_keys | append: t_key | append: '|'
+        assign one = collections.all.products | where: 'handle', product.handle
+        assign f_sale = f_sale | concat: one
+        if f_sale.size >= 4
+          break
+        endif
+      endif
+    endfor
+  endif
+
+  assign cats = 'g1,g2,col,new,sale' | split: ','
+-%}
+
+{%- for cat in cats -%}
+  {%- liquid
+    assign c_index = forloop.index
+    assign c_title = ''
+    assign c_url = ''
+    assign c_block = null
+    assign c_feat = um_none
+    assign c_gender = ''
+    assign c_count = 0
+    case cat
+      when 'g1'
+        assign c_title = g1_title
+        assign c_url = g1_link.url
+        assign c_block = b_g1
+        assign c_feat = f_g1
+        assign c_gender = '1'
+        assign c_count = g1_count
+      when 'g2'
+        assign c_title = g2_title
+        assign c_url = g2_link.url
+        assign c_block = b_g2
+        assign c_feat = f_g2
+        assign c_gender = '2'
+        assign c_count = g2_count
+      when 'col'
+        assign c_title = col_title
+        assign c_url = routes.collections_url
+        assign c_block = b_col
+        assign c_count = entries.size
+      when 'new'
+        assign c_title = new_title
+        assign c_url = new_url
+        assign c_block = b_new
+        assign c_feat = f_new
+      when 'sale'
+        assign c_title = sale_title
+        assign c_url = sale_url
+        assign c_block = b_sale
+        assign c_feat = f_sale
+    endcase
+    if c_url == '#'
+      assign c_url = ''
+    endif
+    assign c_key = c_title | handleize
+    assign is_hl = false
+    if hl_key != blank and c_key == hl_key
+      assign is_hl = true
+    endif
+    assign has_list = false
+    if c_count > 0
+      assign has_list = true
+    endif
+    assign feat_ctx = 'desktop'
+    if context == 'mobile'
+      assign feat_ctx = 'mobile'
+    elsif has_list == false
+      assign feat_ctx = 'stage'
+    endif
+  -%}
+
+  {%- capture c_side -%}
+    {%- render 'ultramaison-nav-featured',
+      block: c_block,
+      products: c_feat,
+      heading: 'Destacados',
+      context: feat_ctx
+    -%}
+  {%- endcapture -%}
+  {%- assign c_side = c_side | strip -%}
+
+  {%- if has_list == false and c_side == blank and c_url == blank -%}
+    {%- continue -%}
+  {%- endif -%}
+
+  {%- comment -%}
+    Lista de colecciones de la categoría (tarjetas compactas con foto real y cantidad de relojes). En el
+    celular se ven hasta 12; si hay más, se ven 9 y el resto queda detrás de "Ver todas": nunca una lista
+    larga ni un "Ver todas" que esconda una sola colección.
+  {%- endcomment -%}
+  {%- liquid
+    assign c_list = ''
+    assign c_rest = ''
+    assign shown = 0
+    if has_list
+      assign c_items = entries
+    else
+      assign c_items = um_none
+    endif
+  -%}
+  {%- for item in c_items -%}
+    {%- liquid
+      assign e = item | split: '¦'
+      assign chip_1 = ''
+      assign chip_2 = ''
+      if cat == 'col'
+        assign main = e[3]
+        if main == blank
+          assign main = e[1]
+        endif
+        if main == blank
+          assign main = e[2]
+        endif
+        if e[4] != '1'
+          if e[1] != blank
+            assign chip_1 = collections[e[1]].url
+          endif
+          if e[2] != blank
+            assign chip_2 = collections[e[2]].url
+          endif
+        endif
+        assign n_watches = e[5] | plus: e[6] | plus: e[7]
+      elsif c_gender == '1'
+        if e[1] == blank
+          continue
+        endif
+        assign main = e[1]
+        assign n_watches = e[5] | plus: 0
+      else
+        if e[2] == blank
+          continue
+        endif
+        assign main = e[2]
+        assign n_watches = e[6] | plus: 0
+      endif
+      assign shown = shown | plus: 1
+      # Cantidad real de relojes de la colección. En COLECCIONES no se muestra: sumar las versiones H y M
+      # podría contar dos veces un mismo reloj.
+      if cat == 'col'
+        assign c_meta = ''
+      elsif n_watches == 1
+        assign c_meta = '1 reloj'
+      else
+        assign c_meta = n_watches | append: ' relojes'
+      endif
+    -%}
+    {%- capture card -%}
+      {%- render 'ultramaison-nav-card',
+        collection: collections[main],
+        title: e[0],
+        meta: c_meta,
+        show_image: cards,
+        chip_1: chip_1,
+        chip_2: chip_2,
+        section: section,
+        context: context
+      -%}
+    {%- endcapture -%}
+    {%- if context == 'mobile' and shown > 9 and c_count > 12 -%}
+      {%- assign c_rest = c_rest | append: card -%}
+    {%- else -%}
+      {%- assign c_list = c_list | append: card -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- comment -%} Estilos: los demás enlaces del menú del Encabezado (solo en COLECCIONES) {%- endcomment -%}
+  {%- capture c_styles -%}
+    {%- if cat == 'col' -%}
+      {%- for link in section.settings.menu.links -%}
+        {%- assign probe = ',' | append: forloop.index | append: ',' -%}
+        {%- unless style_idx contains probe -%}{%- continue -%}{%- endunless -%}
+        <li>
+          <a href="{{ link.url }}" class="{% if context == 'mobile' %}umv3-d__pill{% else %}umv3__aside-link{% endif %}">
+            {{- link.title | capitalize | escape -}}
+          </a>
+        </li>
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endcapture -%}
+  {%- assign c_styles = c_styles | strip -%}
+
+  {%- if context == 'mobile' -%}
+    {%- comment -%} Celular: se juntan en variables de captura que lee el drawer (abajo) {%- endcomment -%}
+    {%- capture m_panel -%}
+      <div
+        class="umv3-d__panel"
+        id="UmV3TabPanel-{{ c_index }}"
+        role="tabpanel"
+        aria-labelledby="UmV3Tab-{{ c_index }}"
+        {% if m_first == false %}
+          hidden
+        {% endif %}
+      >
+        {%- if c_block and c_block.settings.intro != blank -%}
+          <p class="umv3-d__intro">{{ c_block.settings.intro | escape }}</p>
+        {%- endif -%}
+        {%- if c_url != blank -%}
+          <a href="{{ c_url }}" class="umv3-d__row umv3-d__row--strong{% if is_hl %} umv3-d__row--hl{% endif %}">
+            <span>{{ all_prefix | escape }} {{ c_title | escape }}</span>
+            <span class="umv3-d__arrow" aria-hidden="true"></span>
+          </a>
+        {%- endif -%}
+        {%- if has_list -%}
+          <ul class="umv3-d__tiles" role="list">{{ c_list }}</ul>
+          {%- if c_rest != '' -%}
+            <div class="umv3-d__acc umv3-d__more">
+              <button type="button" class="umv3-d__acc-btn" aria-expanded="false" aria-controls="UmV3More-{{ c_index }}">
+                <span>Ver todas ({{ c_count }})</span>
+                <span class="umv3-d__chev" aria-hidden="true"></span>
+              </button>
+              <div id="UmV3More-{{ c_index }}" hidden>
+                <ul class="umv3-d__tiles" role="list">{{ c_rest }}</ul>
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+        {%- if c_styles != blank -%}
+          <p class="umv3-d__label">Estilos</p>
+          <ul class="umv3-d__quick umv3-d__quick--inline" role="list">{{ c_styles }}</ul>
+        {%- endif -%}
+        {{ c_side }}
+      </div>
+    {%- endcapture -%}
+    {%- liquid
+      assign m_first = false
+      assign tab_class = ''
+      if is_hl
+        assign tab_class = ' umv3-d__tab--hl'
+      endif
+      assign m_tabs = m_tabs | append: c_index | append: '¦' | append: c_title | append: '¦' | append: tab_class | append: '§'
+      assign m_panels = m_panels | append: m_panel
+    -%}
+  {%- else -%}
+    {%- render 'ultramaison-nav-auto-item',
+      section: section,
+      index: c_index,
+      title: c_title,
+      url: c_url,
+      is_hl: is_hl,
+      has_list: has_list,
+      count: c_count,
+      list: c_list,
+      side: c_side,
+      styles: c_styles,
+      block: c_block,
+      cards: cards,
+      all_prefix: all_prefix
+    -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if context == 'mobile' -%}
+  {%- assign tab_items = m_tabs | split: '§' -%}
+  <nav
+    class="menu-drawer__navigation umv3-d"
+    aria-label="{{ 'sections.header.menu' | t }}"
+    style="--umv3-hl: {{ section.settings.um_v3_highlight_color | default: '#b3261e' }}; --umv3-media-bg: {{ section.settings.um_mega_image_bg | default: '#f6f6f4' }};"
+  >
+    <um-nav-drawer>
+      {%- if tab_items.size > 1 -%}
+        <div class="umv3-d__tabs" role="tablist">
+          {%- for item in tab_items -%}
+            {%- assign parts = item | split: '¦' -%}
+            <button
+              type="button"
+              role="tab"
+              class="umv3-d__tab{{ parts[2] }}"
+              id="UmV3Tab-{{ parts[0] }}"
+              aria-controls="UmV3TabPanel-{{ parts[0] }}"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+            >
+              {{- parts[1] | escape -}}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+      <div class="umv3-d__panels">{{ m_panels }}</div>
+    </um-nav-drawer>
+  </nav>
+{%- endif -%}

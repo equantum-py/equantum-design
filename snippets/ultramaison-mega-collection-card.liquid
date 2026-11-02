@@ -1,0 +1,88 @@
+{% comment %}
+  Ultra Maison — tarjeta de colección del megamenú.
+  Datos: el enlace del menú (colección real). Imagen: bloque "Colección del megamenú"
+  > imagen de la colección > foto del primer producto > monograma (sin imágenes rotas).
+
+  Accepts:
+  - link: {Object} enlace del menú (required)
+  - section: {Object} sección del header (required)
+  - sizes: {String} atributo sizes de la imagen
+
+  Usage:
+  {% render 'ultramaison-mega-collection-card', link: childlink, section: section, sizes: '200px' %}
+{% endcomment %}
+
+{%- liquid
+  assign um_col = null
+  assign um_custom = null
+  assign um_img = null
+  assign um_desc = ''
+
+  case link.type
+    when 'collection_link'
+      assign um_col = link.object
+    when 'product_link'
+      assign um_img = link.object.featured_image
+  endcase
+
+  if um_col
+    for block in section.blocks
+      if block.type == 'um_mega_collection' and block.settings.collection.id == um_col.id
+        assign um_custom = block
+        break
+      endif
+    endfor
+
+    assign um_img = um_custom.settings.image | default: um_col.featured_image | default: um_col.products.first.featured_image
+
+    if section.settings.um_mega_show_description
+      assign um_desc = um_custom.settings.description
+      if um_desc == blank
+        assign um_desc = um_col.description | strip_html | strip | truncatewords: 12
+      endif
+    endif
+  endif
+
+  assign um_initial = link.title | strip | slice: 0 | upcase
+-%}
+
+<li class="um-mega__card um-mega__card--collection" {{ um_custom.shopify_attributes }}>
+  <a
+    href="{{ link.url }}"
+    class="um-mega__card-link"
+    {% if link.current %}
+      aria-current="page"
+    {% endif %}
+  >
+    {%- if section.settings.um_mega_show_images -%}
+      {%- if um_img != blank -%}
+        <span class="um-mega__media">
+          {{
+            um_img
+            | image_url: width: 520
+            | image_tag:
+              loading: 'lazy',
+              widths: '260, 390, 520',
+              sizes: sizes,
+              class: 'um-mega__img',
+              alt: ''
+          }}
+        </span>
+      {%- else -%}
+        <span class="um-mega__media um-mega__media--empty" aria-hidden="true">
+          <span class="um-mega__monogram">{{ um_initial }}</span>
+        </span>
+      {%- endif -%}
+    {%- endif -%}
+    <span class="um-mega__card-title">{{ link.title | escape }}</span>
+    {%- if section.settings.um_mega_show_count and um_col -%}
+      <span class="um-mega__card-meta">
+        {{- um_col.products_count }}
+        {% if um_col.products_count == 1 %}producto{% else %}productos{% endif -%}
+      </span>
+    {%- endif -%}
+    {%- if um_desc != blank -%}
+      <span class="um-mega__card-desc">{{ um_desc | escape }}</span>
+    {%- endif -%}
+  </a>
+</li>

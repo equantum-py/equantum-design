@@ -14,38 +14,46 @@
     "footer": {
       "type": "footer",
       "blocks": {
-        "image_mN6hyn": {
+        "image_kNj8bk": {
           "type": "image",
           "settings": {
-            "image": "shopify://shop_images/Diseno_sin_titulo_17.png",
-            "image_width": 150,
+            "image": "shopify://shop_images/Emblema_mecanico_Ultra_Maison.png",
+            "image_width": 160,
             "alignment": ""
           }
         },
-        "link_list_UACbit": {
-          "type": "link_list",
+        "brand_information_BWa4JL": {
+          "type": "brand_information",
+          "disabled": true,
           "settings": {
-            "heading": "Enlaces rápidos",
-            "menu": "customer-account-main-menu"
+            "show_social": true
           }
         },
-        "text_nHDppP": {
-          "type": "text",
+        "link_list_tJxf3r": {
+          "type": "link_list",
           "settings": {
-            "heading": "Encabezado",
-            "subtext": "<p>Comparte la información de contacto, los detalles de la tienda y el contenido de la marca con tus clientes.</p>"
+            "heading": "COMPRAR",
+            "menu": "comprar"
+          }
+        },
+        "link_list_UdwRGf": {
+          "type": "link_list",
+          "settings": {
+            "heading": "AYUDA",
+            "menu": "footer"
           }
         }
       },
       "block_order": [
-        "image_mN6hyn",
-        "link_list_UACbit",
-        "text_nHDppP"
+        "image_kNj8bk",
+        "brand_information_BWa4JL",
+        "link_list_tJxf3r",
+        "link_list_UdwRGf"
       ],
       "settings": {
-        "color_scheme": "scheme-3",
-        "newsletter_enable": false,
-        "newsletter_heading": "Subscribe to our emails",
+        "color_scheme": "scheme-4",
+        "newsletter_enable": true,
+        "newsletter_heading": "Suscríbete a nuestros correos electrónicos",
         "enable_follow_on_shop": true,
         "show_social": true,
         "enable_country_selector": true,
@@ -53,8 +61,8 @@
         "payment_enable": true,
         "show_policy": true,
         "margin_top": 0,
-        "padding_top": 44,
-        "padding_bottom": 60
+        "padding_top": 12,
+        "padding_bottom": 4
       }
     }
   },

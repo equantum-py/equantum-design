@@ -1,0 +1,202 @@
+{% comment %}
+  Ultra Maison — megamenú V3: productos destacados y promoción de una categoría.
+  Solo usa productos reales: los elegidos en el bloque "Megamenú V3: vitrina" o, si el bloque no tiene
+  productos, los que entrega la navegación automática. Los que no tienen foto no se muestran.
+  Si no hay productos válidos ni promoción, no genera nada (el panel se adapta sin columna derecha).
+
+  Accepts:
+  - block: {Object} bloque "um_v3_panel" (puede faltar)
+  - products: {Array} productos automáticos (se usan si el bloque no tiene productos)
+  - heading: {String} título para los productos automáticos
+  - context: {String} 'desktop' (columna derecha, en filas), 'stage' (ocupa la vitrina central: categorías sin
+    subelementos como NOVEDADES u OFERTAS) o 'mobile' (carrusel horizontal)
+
+  Usage:
+  {% render 'ultramaison-nav-featured', block: panel_block, context: 'desktop' %}
+{% endcomment %}
+
+{%- liquid
+  assign feat_products = products
+  assign feat_heading = heading
+  assign feat_price = true
+  assign feat_mobile = true
+  if block
+    assign feat_mobile = block.settings.show_on_mobile
+    if block.settings.products != blank
+      assign feat_products = block.settings.products
+      assign feat_heading = block.settings.heading
+      assign feat_price = block.settings.show_price
+    endif
+  endif
+
+  assign is_enabled = true
+  assign feat_mod = 'side'
+  assign img_sizes = '64px'
+  assign feat_max = 3
+  if context == 'mobile'
+    assign feat_mod = 'mobile'
+    assign img_sizes = '112px'
+    unless feat_mobile
+      assign is_enabled = false
+    endunless
+  elsif context == 'stage'
+    assign feat_mod = 'stage'
+    assign img_sizes = '170px'
+    assign feat_max = 4
+  endif
+
+  # Relojes válidos: con foto y sin repetir nombre dentro del panel (varios productos del catálogo comparten
+  # título, p. ej. un "Cruise Lady 36.5mm" por color). Si no alcanzan, se muestran menos tarjetas.
+  assign valid_count = 0
+  assign feat_keys = '|'
+  for product in feat_products
+    if product.featured_image == blank
+      continue
+    endif
+    assign t_key = product.title | handleize
+    assign probe = '|' | append: t_key | append: '|'
+    if feat_keys contains probe
+      continue
+    endif
+    assign feat_keys = feat_keys | append: t_key | append: '|'
+    assign valid_count = valid_count | plus: 1
+  endfor
+
+  if valid_count > feat_max
+    assign valid_count = feat_max
+  endif
+
+  assign has_promo = false
+  if block and block.settings.show_promo
+    if block.settings.promo_image != blank or block.settings.promo_heading != blank
+      assign has_promo = true
+    endif
+  endif
+
+  assign feat_cols = valid_count
+  assign currency_code = settings.currency_code_enabled
+-%}
+
+{%- if is_enabled -%}
+{%- if valid_count > 0 or has_promo -%}
+  <div class="umv3-feat umv3-feat--{{ feat_mod }}{% if has_promo %} umv3-feat--has-promo{% endif %}"{% if block %} {{ block.shopify_attributes }}{% endif %}>
+    {%- if valid_count > 0 -%}
+      <div class="umv3-feat__products">
+      {%- if feat_heading != blank -%}
+        <p class="umv3__eyebrow">{{ feat_heading | escape }}</p>
+      {%- endif -%}
+      <ul class="umv3-feat__grid" role="list" style="--umv3-feat-cols: {{ feat_cols }};">
+        {%- assign shown = 0 -%}
+        {%- assign shown_keys = '|' -%}
+        {%- for product in feat_products -%}
+          {%- if product.featured_image == blank -%}{%- continue -%}{%- endif -%}
+          {%- if shown >= feat_max -%}{%- break -%}{%- endif -%}
+          {%- liquid
+            assign t_key = product.title | handleize
+            assign probe = '|' | append: t_key | append: '|'
+            if shown_keys contains probe
+              continue
+            endif
+            assign shown_keys = shown_keys | append: t_key | append: '|'
+            assign shown = shown | plus: 1
+          -%}
+          <li>
+            <a href="{{ product.url }}" class="umv3-feat__card">
+              <span class="umv3-feat__media">
+                <span class="umv3-feat__ph" aria-hidden="true">UM</span>
+                {{
+                  product.featured_image
+                  | image_url: width: 400
+                  | image_tag:
+                    loading: 'lazy',
+                    fetchpriority: 'low',
+                    widths: '128, 200, 300, 400',
+                    sizes: img_sizes,
+                    class: 'umv3-feat__img',
+                    alt: product.featured_image.alt | default: product.title
+                }}
+              </span>
+              <span class="umv3-feat__body">
+              <span class="umv3-feat__title">{{ product.title | escape }}</span>
+              {%- if feat_price -%}
+                {%- liquid
+                  if currency_code
+                    assign um_price = product.price | money_with_currency
+                    assign um_compare = product.compare_at_price | money_with_currency
+                  else
+                    assign um_price = product.price | money
+                    assign um_compare = product.compare_at_price | money
+                  endif
+                -%}
+                <span class="umv3-feat__price">
+                  {%- if product.price_varies -%}
+                    {{ 'products.product.price.from_price_html' | t: price: um_price }}
+                  {%- else -%}
+                    {%- if product.compare_at_price > product.price -%}
+                      <s>
+                        <span class="visually-hidden">{{ 'products.product.price.regular_price' | t }}</span>
+                        {{- um_compare -}}
+                      </s>
+                      <span class="visually-hidden">{{ 'products.product.price.sale_price' | t }}</span>
+                    {%- endif -%}
+                    <span>{{ um_price }}</span>
+                  {%- endif -%}
+                </span>
+              {%- endif -%}
+              {%- unless product.available -%}
+                <span class="umv3-feat__soldout">{{ 'products.product.sold_out' | t }}</span>
+              {%- endunless -%}
+              </span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+      </div>
+    {%- endif -%}
+
+    {%- if has_promo -%}
+      {%- liquid
+        assign promo_tag = 'div'
+        if block.settings.promo_link != blank
+          assign promo_tag = 'a'
+        endif
+      -%}
+      <{{ promo_tag }}
+        class="umv3-promo{% if block.settings.promo_image == blank %} umv3-promo--text{% endif %}"
+        {% if promo_tag == 'a' %}
+          href="{{ block.settings.promo_link }}"
+        {% endif %}
+      >
+        {%- if block.settings.promo_image != blank -%}
+          <span class="umv3-promo__media">
+            {{
+              block.settings.promo_image
+              | image_url: width: 720
+              | image_tag:
+                loading: 'lazy',
+                widths: '360, 540, 720',
+                sizes: '(min-width: 990px) 340px, 90vw',
+                class: 'umv3-promo__img',
+                alt: block.settings.promo_heading
+            }}
+          </span>
+        {%- endif -%}
+        <span class="umv3-promo__body">
+          {%- if block.settings.promo_eyebrow != blank -%}
+            <span class="umv3__eyebrow">{{ block.settings.promo_eyebrow | escape }}</span>
+          {%- endif -%}
+          {%- if block.settings.promo_heading != blank -%}
+            <span class="umv3-promo__title">{{ block.settings.promo_heading | escape }}</span>
+          {%- endif -%}
+          {%- if block.settings.promo_text != blank -%}
+            <span class="umv3-promo__text">{{ block.settings.promo_text | escape }}</span>
+          {%- endif -%}
+          {%- if block.settings.promo_button != blank and promo_tag == 'a' -%}
+            <span class="umv3-promo__button">{{ block.settings.promo_button | escape }}</span>
+          {%- endif -%}
+        </span>
+      </{{ promo_tag }}>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+{%- endif -%}

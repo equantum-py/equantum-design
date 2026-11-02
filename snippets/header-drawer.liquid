@@ -20,9 +20,22 @@
         {{- 'icon-close.svg' | inline_asset_content -}}
       </span>
     </summary>
-    <div id="menu-drawer" class="gradient menu-drawer motion-reduce color-{{ section.settings.menu_color_scheme }}">
+    {%- liquid
+      assign um_v3 = false
+      if section.settings.menu_type_desktop == 'um_mega_v3'
+        assign um_v3 = true
+      endif
+      assign um_visual = section.settings.um_mobile_menu_images
+      if um_v3
+        assign um_visual = false
+      endif
+    -%}
+    <div id="menu-drawer" class="gradient menu-drawer motion-reduce color-{{ section.settings.menu_color_scheme }}{% if um_visual %} um-drawer--visual{% endif %}">
       <div class="menu-drawer__inner-container">
         <div class="menu-drawer__navigation-container">
+          {%- if um_v3 -%}
+            {%- render 'ultramaison-nav-drawer', section: section -%}
+          {%- else -%}
           <nav class="menu-drawer__navigation">
             <ul class="menu-drawer__menu has-submenu list-menu" role="list">
               {%- for link in section.settings.menu.links -%}
@@ -54,6 +67,16 @@
                             {{ link.title | escape }}
                           </button>
                           <ul class="menu-drawer__menu list-menu" role="list" tabindex="-1">
+                            {%- if um_visual and link.url != blank and link.url != '#' -%}
+                              <li>
+                                <a
+                                  href="{{ link.url }}"
+                                  class="menu-drawer__menu-item link link--text list-menu__item focus-inset um-drawer-all"
+                                >
+                                  Ver todo {{ link.title | escape }}
+                                </a>
+                              </li>
+                            {%- endif -%}
                             {%- for childlink in link.links -%}
                               <li>
                                 {%- if childlink.links == blank -%}
@@ -65,7 +88,14 @@
                                       aria-current="page"
                                     {% endif %}
                                   >
-                                    {{ childlink.title | escape }}
+                                    {%- if um_visual -%}
+                                      <span class="um-drawer-thumb" aria-hidden="true">
+                                        {%- render 'ultramaison-menu-media', link: childlink, width: 160, sizes: '52px' -%}
+                                      </span>
+                                      <span class="um-drawer-label">{{ childlink.title | escape }}</span>
+                                    {%- else -%}
+                                      {{ childlink.title | escape }}
+                                    {%- endif -%}
                                   </a>
                                 {%- else -%}
                                   <details id="Details-menu-drawer-{{ link.handle }}-{{ childlink.handle }}">
@@ -73,7 +103,14 @@
                                       id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
                                       class="menu-drawer__menu-item link link--text list-menu__item focus-inset"
                                     >
-                                      {{ childlink.title | escape }}
+                                      {%- if um_visual -%}
+                                        <span class="um-drawer-thumb" aria-hidden="true">
+                                          {%- render 'ultramaison-menu-media', link: childlink, width: 160, sizes: '52px' -%}
+                                        </span>
+                                        <span class="um-drawer-label">{{ childlink.title | escape }}</span>
+                                      {%- else -%}
+                                        {{ childlink.title | escape }}
+                                      {%- endif -%}
                                       <span class="svg-wrapper">
                                         {{- 'icon-arrow.svg' | inline_asset_content -}}
                                       </span>
@@ -139,6 +176,7 @@
               {%- endfor -%}
             </ul>
           </nav>
+          {%- endif -%}
           <div class="menu-drawer__utility-links">
             {%- if show_country_selector or show_language_selector -%}
               <div class="menu-drawer__localization header-localization">

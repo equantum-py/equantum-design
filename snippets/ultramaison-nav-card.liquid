@@ -1,0 +1,88 @@
+{% comment %}
+  Ultra Maison — megamenú V3: tarjeta de colección para la vitrina (escritorio y celular).
+  La foto sale del propio ítem del menú: si enlaza a una colección, su imagen (o la del primer producto);
+  si enlaza a un producto, la foto del producto. Con URL escrita a mano no hay objeto: se muestra una
+  tarjeta tipográfica (nunca un recuadro gris vacío).
+
+  Accepts:
+  - link: {Object} ítem del menú (o, en la navegación automática, collection)
+  - collection: {Object} colección (navegación automática: nombre, enlace y foto salen de ella)
+  - title: {String} nombre a mostrar (reemplaza al del ítem o la colección)
+  - meta: {String} dato real bajo el nombre, p. ej. "9 relojes" (navegación automática; opcional)
+  - chip_1 / chip_2: {String} enlaces directos por género (navegación automática)
+  - show_image: {Boolean} mostrar foto o tarjeta tipográfica
+  - with_chips: {Boolean} accesos por género (H / M)
+  - g1_link / g2_link: {Object} categorías de género del menú
+  - section: {Object} sección del encabezado
+  - context: {String} 'desktop' (por defecto) o 'mobile'
+
+  Usage:
+  {% render 'ultramaison-nav-card', link: grandchildlink, show_image: true, with_chips: false, section: section %}
+{% endcomment %}
+
+{%- liquid
+  assign card_img = false
+  if collection
+    assign card_title = title | default: collection.title
+    assign card_url = collection.url
+    assign card_current = false
+    if show_image
+      assign card_img = collection.featured_image
+    endif
+  else
+    assign card_title = title | default: link.title
+    assign card_url = link.url
+    assign card_current = link.current
+    if show_image
+      if link.type == 'collection_link' or link.type == 'product_link'
+        assign card_img = link.object.featured_image
+      endif
+    endif
+  endif
+  assign card_sizes = '52px'
+  if context == 'mobile'
+    assign card_sizes = '104px'
+  endif
+  assign is_text = false
+  if show_image
+    unless card_img
+      assign is_text = true
+    endunless
+  endif
+-%}
+<li class="umv3-card{% if is_text %} umv3-card--text{% endif %}">
+  {%- if show_image -%}
+    <a href="{{ card_url }}" class="umv3-card__media" tabindex="-1" aria-hidden="true">
+      {%- comment -%}
+        La inicial queda siempre debajo: mientras la foto carga (o si no carga) se ve la inicial sobre el fondo
+        de la marca, nunca un recuadro gris vacío. La foto la tapa al cargar.
+      {%- endcomment -%}
+      <span class="umv3-card__mono">{{ card_title | strip | slice: 0 | upcase | escape }}</span>
+      {%- if card_img -%}
+        {{
+          card_img
+          | image_url: width: 240
+          | image_tag:
+            loading: 'lazy',
+            fetchpriority: 'low',
+            widths: '104, 160, 240',
+            sizes: card_sizes,
+            class: 'umv3-card__img',
+            alt: ''
+        }}
+      {%- endif -%}
+    </a>
+  {%- endif -%}
+  {%- render 'ultramaison-nav-line',
+    title: card_title,
+    meta: meta,
+    url: card_url,
+    current: card_current,
+    chip_1: chip_1,
+    chip_2: chip_2,
+    with_chips: with_chips,
+    g1_link: g1_link,
+    g2_link: g2_link,
+    section: section
+  -%}
+</li>

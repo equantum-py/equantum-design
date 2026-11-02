@@ -1,0 +1,47 @@
+/* Ultra Maison — Fase 4: páginas "Ver todo" (sección ultramaison-landing).
+ * Identidad: navy #0f1f43, tinta #39445e, gris #8a8f98, líneas #edf0f4, fondo suave #f4f6fa. */
+.um-landing .collection-hero__title { text-transform: none; }
+.um-landing__chips { margin-top: 0.4rem; margin-bottom: 1.6rem; }
+.um-landing__chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.um-landing__chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3.6rem;
+  padding: 0 1.6rem;
+  border: 1px solid #edf0f4;
+  border-radius: 999px;
+  background: #f4f6fa;
+  color: #39445e;
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background-color 0.2s;
+}
+.um-landing__chip:hover,
+.um-landing__chip:focus-visible { border-color: #0f1f43; background: #fff; color: #0f1f43; }
+.um-landing__body { padding-bottom: 6rem; }
+.um-landing__body .collection { padding: 0; }
+.um-landing__count { margin: 0 0 1.6rem; color: #8a8f98; font-size: 1.3rem; letter-spacing: 0.04em; }
+.um-landing__empty { padding: 4rem 0; text-align: center; color: #39445e; }
+.um-landing__more { margin-top: 3rem; text-align: center; }
+.um-landing [data-um-best][aria-busy='true'] { opacity: 0.6; transition: opacity 0.2s; }
+
+@media screen and (max-width: 749px) {
+  .um-landing__chip-list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.4rem;
+  }
+  .um-landing__chip-list::-webkit-scrollbar { display: none; }
+  .um-landing__chip-list li { flex: 0 0 auto; }
+  .um-landing__body { padding-bottom: 4rem; }
+}

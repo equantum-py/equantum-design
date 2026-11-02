@@ -1,5 +1,6 @@
 {% comment %}theme-check-disable ImgLazyLoading{% endcomment %}
 {{ 'component-collection-hero.css' | asset_url | stylesheet_tag }}
+{{ 'ultramaison-collection-page.css' | asset_url | stylesheet_tag }}
 
 {%- style -%}
   @media screen and (max-width: 749px) {
@@ -9,7 +10,7 @@
   }
 {%- endstyle -%}
 
-<div class="collection-hero{% if section.settings.show_collection_image and collection.image %} collection-hero--with-image{% endif %} color-{{ section.settings.color_scheme }} gradient">
+<div class="collection-hero um-collection-premium{% if section.settings.show_collection_image and collection.image %} collection-hero--with-image{% endif %} color-{{ section.settings.color_scheme }} gradient">
   <div class="collection-hero__inner page-width {% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
     <div class="collection-hero__text-wrapper">
       <h1 class="collection-hero__title">
@@ -21,6 +22,22 @@
         <div class="collection-hero__description rte">{{ collection.description }}</div>
       {%- endif -%}
     </div>
+
+    {%- assign um_first_watch = collection.products.first -%}
+    {%- if um_first_watch.featured_image != blank -%}
+      <div class="um-collection-premium__visual">
+        {{
+          um_first_watch.featured_image
+          | image_url: width: 900
+          | image_tag:
+            loading: 'eager',
+            widths: '360, 540, 720, 900',
+            sizes: '(min-width: 750px) 360px, 220px',
+            alt: um_first_watch.title,
+            class: 'um-collection-premium__image'
+        }}
+      </div>
+    {%- endif -%}
 
     {%- if section.settings.show_collection_image and collection.image -%}
       <div class="collection-hero__image-container media gradient">

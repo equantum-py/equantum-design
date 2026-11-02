@@ -1,0 +1,22 @@
+{% comment %}
+  Ultra Maison — miniatura del menú móvil: imagen real o monograma si no hay imagen.
+
+  Accepts:
+  - link: {Object} enlace del menú (required)
+  - section: {Object} sección del header (required)
+
+  Usage:
+  {% render 'ultramaison-drawer-thumb', link: childlink, section: section %}
+{% endcomment %}
+
+{%- capture um_thumb -%}
+  {%- render 'ultramaison-menu-media', link: link, width: 160, sizes: '48px', section: section -%}
+{%- endcapture -%}
+{%- assign um_thumb = um_thumb | strip -%}
+<span class="um-drawer-thumb{% if um_thumb == blank %} um-drawer-thumb--empty{% endif %}" aria-hidden="true">
+  {%- if um_thumb != blank -%}
+    {{ um_thumb }}
+  {%- else -%}
+    {{ link.title | strip | slice: 0 | upcase }}
+  {%- endif -%}
+</span>

@@ -1,0 +1,347 @@
+{% comment %}
+  Ultra Maison — megamenú V3 "vitrina" (escritorio). Todo el contenido sale de Shopify; no hay colecciones en el código.
+
+  Menú: el del bloque "Megamenú V3: menú" (independiente de main-menu, que sigue usando la V2).
+  Si ese bloque no existe o está vacío, se usa la navegación automática (snippet 'ultramaison-nav-auto':
+  HOMBRE | MUJER | COLECCIONES | NOVEDADES | OFERTAS con las colecciones reales). La navegación anterior
+  nunca se muestra con la V3.
+  - Nivel 1: categorías (HOMBRE, MUJER, COLECCIONES, NOVEDADES, OFERTAS).
+  - Nivel 2 con subelementos: familias (columna izquierda; al pasar el mouse cambian la vitrina central).
+  - Nivel 2 sin subelementos: accesos (Ver todos, Más vendidos…) o, si no hay familias, colecciones.
+  - Nivel 3: colecciones de cada familia, como tarjetas con la foto de la colección.
+
+  Una categoría abre un panel si tiene subelementos o un bloque "Megamenú V3: vitrina" con contenido
+  (así NOVEDADES y OFERTAS pueden mostrar relojes y promoción aunque no tengan subelementos).
+  Si no, es un enlace directo.
+
+  Usage:
+  {% render 'ultramaison-nav-mega', section: section %}
+{% endcomment %}
+
+{%- liquid
+  assign um_menu = section.settings.menu
+  assign um_menu_own = false
+  for block in section.blocks
+    if block.type == 'um_v3_menu' and block.settings.menu != blank
+      assign um_menu = block.settings.menu
+      assign um_menu_own = true
+      break
+    endif
+  endfor
+
+  assign um_cols = section.settings.um_v3_columns | default: 4
+  assign um_trigger = section.settings.um_v3_trigger | default: 'hover'
+  assign um_cards = true
+  if section.settings.um_v3_card_style == 'list'
+    assign um_cards = false
+  endif
+  assign um_all = section.settings.um_v3_all_prefix | default: 'Explorar'
+  assign um_col_key = section.settings.um_v3_collections_title | handleize
+  assign um_hl_key = section.settings.um_v3_highlight_title | handleize
+  assign um_g1_key = section.settings.um_v3_gender_1 | handleize
+  assign um_g2_key = section.settings.um_v3_gender_2 | handleize
+  assign um_g1_link = null
+  assign um_g2_link = null
+  for um_link in um_menu.links
+    assign um_key = um_link.title | handleize
+    if um_g1_key != blank and um_key == um_g1_key
+      assign um_g1_link = um_link
+    elsif um_g2_key != blank and um_key == um_g2_key
+      assign um_g2_link = um_link
+    endif
+  endfor
+-%}
+
+<um-nav-mega
+  class="umv3"
+  data-trigger="{{ um_trigger }}"
+  style="--umv3-hl: {{ section.settings.um_v3_highlight_color | default: '#b3261e' }}; --umv3-media-bg: {{ section.settings.um_mega_image_bg | default: '#f6f6f4' }}; --umv3-cols: {{ um_cols }};"
+>
+  <nav class="header__inline-menu umv3__nav" aria-label="{{ 'sections.header.menu' | t }}">
+    <ul class="list-menu list-menu--inline umv3__list" role="list">
+      {%- unless um_menu_own -%}
+        {%- capture um_data -%}{%- render 'ultramaison-nav-auto-data', section: section -%}{%- endcapture -%}
+        {%- render 'ultramaison-nav-auto', section: section, data: um_data, context: 'desktop' -%}
+      {%- endunless -%}
+      {%- for link in um_menu.links -%}
+        {%- unless um_menu_own -%}{%- break -%}{%- endunless -%}
+        {%- liquid
+          assign top_index = forloop.index
+          assign top_key = link.title | handleize
+          assign is_hl = false
+          if um_hl_key != blank and top_key == um_hl_key
+            assign is_hl = true
+          endif
+          assign is_collections = false
+          if um_col_key != blank and top_key == um_col_key
+            assign is_collections = true
+          endif
+
+          assign panel_block = null
+          for block in section.blocks
+            if block.type == 'um_v3_panel'
+              assign block_key = block.settings.menu_item | handleize
+              if block_key == top_key
+                assign panel_block = block
+                break
+              endif
+            endif
+          endfor
+
+          assign fam_count = 0
+          for childlink in link.links
+            if childlink.links != blank
+              assign fam_count = fam_count | plus: 1
+            endif
+          endfor
+
+          assign has_children = false
+          if link.links != blank
+            assign has_children = true
+          endif
+          assign has_url = false
+          if link.url != blank and link.url != '#'
+            assign has_url = true
+          endif
+        -%}
+
+        {%- capture um_side -%}
+          {%- if panel_block -%}
+            {%- if has_children -%}
+              {%- render 'ultramaison-nav-featured', block: panel_block, context: 'desktop' -%}
+            {%- else -%}
+              {%- render 'ultramaison-nav-featured', block: panel_block, context: 'stage' -%}
+            {%- endif -%}
+          {%- endif -%}
+        {%- endcapture -%}
+        {%- assign um_side = um_side | strip -%}
+
+        <li class="umv3__item">
+          {%- if has_children or um_side != blank -%}
+            <details class="umv3__details" id="UmV3-{{ top_index }}">
+              <summary
+                class="header__menu-item list-menu__item link focus-inset umv3__top{% if is_hl %} umv3__top--hl{% endif %}"
+                id="UmV3Toggle-{{ top_index }}"
+              >
+                <span{% if link.child_active or link.active %} class="header__active-menu-item"{% endif %}>
+                  {{- link.title | escape -}}
+                </span>
+                {{- 'icon-caret.svg' | inline_asset_content -}}
+              </summary>
+
+              <div
+                class="umv3__panel color-{{ section.settings.menu_color_scheme }}"
+                id="UmV3Panel-{{ top_index }}"
+                role="region"
+                aria-labelledby="UmV3Toggle-{{ top_index }}"
+                tabindex="-1"
+              >
+                <div class="umv3__inner{% if has_children and um_side != blank %} umv3__inner--side{% endif %}">
+                  {%- comment -%} Columna izquierda: categoría, accesos, familias y "Explorar" {%- endcomment -%}
+                  <div class="umv3__aside">
+                    <p class="umv3__cat{% if is_hl %} umv3__cat--hl{% endif %}">{{ link.title | escape }}</p>
+                    {%- if panel_block and panel_block.settings.intro != blank -%}
+                      <p class="umv3__intro">{{ panel_block.settings.intro | escape }}</p>
+                    {%- endif -%}
+
+                    {%- if fam_count > 0 -%}
+                      {%- capture um_quick -%}
+                        {%- for childlink in link.links -%}
+                          {%- if childlink.links == blank -%}
+                            <li>
+                              <a
+                                href="{{ childlink.url }}"
+                                class="umv3__aside-link"
+                                {% if childlink.current %}
+                                  aria-current="page"
+                                {% endif %}
+                              >
+                                {{- childlink.title | escape -}}
+                              </a>
+                            </li>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      {%- endcapture -%}
+                      {%- assign um_quick = um_quick | strip -%}
+
+                      <p class="umv3__label">{{ section.settings.um_v3_families_label | default: 'Familias' | escape }}</p>
+                      <ul class="umv3__aside-list" role="list">
+                        {%- assign fam_index = 0 -%}
+                        {%- for childlink in link.links -%}
+                          {%- if childlink.links != blank -%}
+                            {%- assign fam_index = fam_index | plus: 1 -%}
+                            <li>
+                              <a
+                                href="{{ childlink.url }}"
+                                class="umv3__family{% if fam_index == 1 %} is-active{% endif %}"
+                                data-umv3-target="UmV3View-{{ top_index }}-{{ fam_index }}"
+                                aria-controls="UmV3View-{{ top_index }}-{{ fam_index }}"
+                                {% if childlink.url == '#' or childlink.url == blank %}
+                                  role="button"
+                                {% endif %}
+                              >
+                                <span>{{ childlink.title | escape }}</span>
+                                {%- if section.settings.um_v3_show_counts -%}
+                                  <span class="umv3__count">{{ childlink.links.size }}</span>
+                                {%- endif -%}
+                              </a>
+                            </li>
+                          {%- endif -%}
+                        {%- endfor -%}
+                        {%- if is_collections and section.settings.um_v3_show_az -%}
+                          <li>
+                            <a
+                              href="{{ link.url }}"
+                              class="umv3__family"
+                              data-umv3-target="UmV3View-{{ top_index }}-az"
+                              aria-controls="UmV3View-{{ top_index }}-az"
+                            >
+                              <span>{{ section.settings.um_v3_az_label | default: 'Todas A–Z' | escape }}</span>
+                            </a>
+                          </li>
+                        {%- endif -%}
+                      </ul>
+
+                      {%- if um_quick != blank -%}
+                        <ul class="umv3__aside-list umv3__aside-list--quick" role="list">{{ um_quick }}</ul>
+                      {%- endif -%}
+                    {%- endif -%}
+
+                    {%- if has_url -%}
+                      <a href="{{ link.url }}" class="umv3__cta{% if is_hl %} umv3__cta--hl{% endif %}">
+                        <span>{{ um_all | escape }} {{ link.title | escape }}</span>
+                        <span class="umv3__cta-arrow" aria-hidden="true"></span>
+                      </a>
+                    {%- endif -%}
+                  </div>
+
+                  {%- comment -%} Vitrina central {%- endcomment -%}
+                  <div class="umv3__stage">
+                    {%- if fam_count > 0 -%}
+                      {%- assign fam_index = 0 -%}
+                      {%- for childlink in link.links -%}
+                        {%- if childlink.links != blank -%}
+                          {%- assign fam_index = fam_index | plus: 1 -%}
+                          <div
+                            class="umv3__view"
+                            id="UmV3View-{{ top_index }}-{{ fam_index }}"
+                            {% if fam_index > 1 %}
+                              hidden
+                            {% endif %}
+                          >
+                            <div class="umv3__view-head">
+                              <p class="umv3__view-title">{{ childlink.title | escape }}</p>
+                              {%- if childlink.url != blank and childlink.url != '#' -%}
+                                <a href="{{ childlink.url }}" class="umv3__view-link">
+                                  {{- um_all | escape }} {{ childlink.title | escape -}}
+                                </a>
+                              {%- endif -%}
+                            </div>
+                            <ul class="umv3__grid{% unless um_cards %} umv3__grid--list{% endunless %}" role="list">
+                              {%- for grandchildlink in childlink.links -%}
+                                {%- render 'ultramaison-nav-card',
+                                  link: grandchildlink,
+                                  show_image: um_cards,
+                                  with_chips: is_collections,
+                                  g1_link: um_g1_link,
+                                  g2_link: um_g2_link,
+                                  section: section
+                                -%}
+                              {%- endfor -%}
+                            </ul>
+                          </div>
+                        {%- endif -%}
+                      {%- endfor -%}
+
+                      {%- if is_collections and section.settings.um_v3_show_az -%}
+                        {%- liquid
+                          assign az_raw = ''
+                          for childlink in link.links
+                            for grandchildlink in childlink.links
+                              assign az_raw = az_raw | append: grandchildlink.title | append: '¦' | append: grandchildlink.url | append: '§'
+                            endfor
+                          endfor
+                          assign az_items = az_raw | split: '§' | uniq | sort_natural
+                          assign az_letter = ''
+                        -%}
+                        <div class="umv3__view" id="UmV3View-{{ top_index }}-az" hidden>
+                          <div class="umv3__view-head">
+                            <p class="umv3__view-title">{{ section.settings.um_v3_az_label | default: 'Todas A–Z' | escape }}</p>
+                            {%- if has_url -%}
+                              <a href="{{ link.url }}" class="umv3__view-link">
+                                {{- um_all | escape }} {{ link.title | escape -}}
+                              </a>
+                            {%- endif -%}
+                          </div>
+                          <ul class="umv3__az" role="list">
+                            {%- for az_item in az_items -%}
+                              {%- liquid
+                                assign az_parts = az_item | split: '¦'
+                                assign az_title = az_parts | first
+                                assign az_url = az_parts | last
+                                assign az_first = az_title | slice: 0 | upcase
+                              -%}
+                              {%- if az_first != az_letter -%}
+                                {%- assign az_letter = az_first -%}
+                                <li class="umv3__az-letter" aria-hidden="true">{{ az_letter }}</li>
+                              {%- endif -%}
+                              <li>
+                                {%- render 'ultramaison-nav-line',
+                                  title: az_title,
+                                  url: az_url,
+                                  with_chips: true,
+                                  g1_link: um_g1_link,
+                                  g2_link: um_g2_link,
+                                  section: section
+                                -%}
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+                        </div>
+                      {%- endif -%}
+                    {%- elsif has_children -%}
+                      {%- comment -%} Sin familias: los enlaces de nivel 2 son la vitrina (p. ej. NOVEDADES con colecciones) {%- endcomment -%}
+                      <div class="umv3__view">
+                        <ul class="umv3__grid{% unless um_cards %} umv3__grid--list{% endunless %}" role="list">
+                          {%- for childlink in link.links -%}
+                            {%- render 'ultramaison-nav-card',
+                              link: childlink,
+                              show_image: um_cards,
+                              with_chips: is_collections,
+                              g1_link: um_g1_link,
+                              g2_link: um_g2_link,
+                              section: section
+                            -%}
+                          {%- endfor -%}
+                        </ul>
+                      </div>
+                    {%- else -%}
+                      {%- comment -%} Sin subelementos: los relojes y la promoción ocupan la vitrina {%- endcomment -%}
+                      {{ um_side }}
+                    {%- endif -%}
+                  </div>
+
+                  {%- if has_children and um_side != blank -%}
+                    <div class="umv3__side">{{ um_side }}</div>
+                  {%- endif -%}
+                </div>
+              </div>
+            </details>
+          {%- else -%}
+            <a
+              href="{{ link.url }}"
+              class="header__menu-item list-menu__item link link--text focus-inset umv3__top{% if is_hl %} umv3__top--hl{% endif %}"
+              {% if link.current %}
+                aria-current="page"
+              {% endif %}
+            >
+              <span{% if link.current %} class="header__active-menu-item"{% endif %}>
+                {{- link.title | escape -}}
+              </span>
+            </a>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+</um-nav-mega>
