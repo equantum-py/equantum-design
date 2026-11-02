@@ -228,7 +228,7 @@
             "image": "shopify://shop_images/TechnoMarine_Cruise_Glitz_Chronograph.png",
             "title": "Cruise Glitz",
             "subtitle": "",
-            "collection": "cruise-california-hombre",
+            "collection": "cruise-glitz",
             "link": "",
             "alt": "",
             "show_title": true,
@@ -341,10 +341,10 @@
       ],
       "name": "ULTRAMAISON — Editorial",
       "settings": {
-        "eyebrow": "ULTRAMAISON",
-        "heading": "\"Una selección excepcional\"",
-        "text": "<p><em>Seleccionamos piezas que trascienden el tiempo. Diseño, precisión y carácter en perfecta armonía.</em></p>",
-        "button_label": "Conoce nuestra filosofía",
+        "eyebrow": "EL UNIVERSO ULTRA MAISON",
+        "heading": "El tiempo tiene carácter.",
+        "text": "<p>Descubre una selección de relojes donde el diseño, la personalidad y la precisión se encuentran.</p>",
+        "button_label": "",
         "button_link": "",
         "text_alignment": "center",
         "content_width": 1000,
@@ -523,7 +523,8 @@
         "image_behavior": "none",
         "show_text_below": true,
         "accessibility_info": "Slideshow about our brand"
-      }
+      },
+      "disabled": true
     },
     "featured_collection_WmJTTf": {
       "type": "featured-collection",
@@ -620,12 +621,28 @@
         "padding_top": 20,
         "padding_bottom": 0
       }
+    },
+    "ultramaison_v5_story": {
+      "type": "ultramaison-v5-story",
+      "settings": {
+        "reverse": false,
+        "mobile_ratio": "4 / 5",
+        "eyebrow": "EL UNIVERSO ULTRA MAISON",
+        "heading": "El tiempo tiene carácter.",
+        "description": "<p>Una selección de relojes que expresa diseño, personalidad y precisión.</p>",
+        "button_label": "",
+        "background": "#F7F7F5",
+        "text_color": "#171717",
+        "image": "shopify://shop_images/ChatGPT_Image_10_sept_2026_10_12_24_a.m..png",
+        "mobile_image": "shopify://shop_images/Elegancia_que_marca_su_tiempo.png"
+      }
     }
   },
   "order": [
     "slideshow_FpdATL",
     "ultramaison_categorias_7AYeef",
     "ultramaison_editorial_9JUVHL",
+    "ultramaison_v5_story",
     "ultramaison_commercial_banners_pyUPNU",
     "featured_collection_XF4B43",
     "ultramaison_commercial_banners_AL3UzB",
