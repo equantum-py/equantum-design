@@ -17,63 +17,64 @@
         "padding_bottom": 28
       }
     },
-    "slideshow_gGyUpp": {
-      "type": "slideshow",
+    "um_landing": {
+      "type": "ultramaison-landing",
       "blocks": {
-        "slide_e7mdfJ": {
-          "type": "slide",
+        "style_correa": {
+          "type": "style",
           "settings": {
-            "image_overlay_opacity": 0,
-            "heading": "Diapositiva de imagen",
-            "heading_size": "h1",
-            "subheading": "Cuenta la historia de tu marca a través de imágenes",
-            "button_label": "Etiqueta de botón",
-            "link": "",
-            "button_style_secondary": false,
-            "show_text_box": true,
-            "box_align": "middle-center",
-            "text_alignment": "center",
-            "text_alignment_mobile": "center",
-            "color_scheme": ""
+            "page_handle": "correa-silicona",
+            "heading": "Correa de silicona",
+            "collections": [],
+            "tag": "Silicone"
           }
         },
-        "slide_zkg7JW": {
-          "type": "slide",
+        "style_elegante": {
+          "type": "style",
           "settings": {
-            "image_overlay_opacity": 0,
-            "heading": "Diapositiva de imagen",
-            "heading_size": "h1",
-            "subheading": "Cuenta la historia de tu marca a través de imágenes",
-            "button_label": "Etiqueta de botón",
-            "link": "",
-            "button_style_secondary": false,
-            "show_text_box": true,
-            "box_align": "middle-center",
-            "text_alignment": "center",
-            "text_alignment_mobile": "center",
-            "color_scheme": ""
+            "page_handle": "elegante",
+            "heading": "Elegante",
+            "collections": [],
+            "tag": ""
+          }
+        },
+        "style_deportivos": {
+          "type": "style",
+          "settings": {
+            "page_handle": "deportivos",
+            "heading": "Deportivos",
+            "collections": [],
+            "tag": ""
           }
         }
       },
       "block_order": [
-        "slide_e7mdfJ",
-        "slide_zkg7JW"
+        "style_correa",
+        "style_elegante",
+        "style_deportivos"
       ],
-      "name": "t:sections.slideshow.presets.name",
       "settings": {
-        "layout": "full_bleed",
-        "slide_height": "medium",
-        "slider_visual": "counter",
-        "auto_rotate": false,
-        "change_slides_speed": 5,
-        "image_behavior": "none",
-        "show_text_below": true,
-        "accessibility_info": "Presentación de diapositivas sobre tu marca"
+        "pages_men": "caballeros",
+        "heading_men": "Relojes para hombre",
+        "pages_women": "damas",
+        "heading_women": "Relojes para mujer",
+        "pages_sale": "ofertas",
+        "heading_sale": "Ofertas",
+        "pages_new": "novedades",
+        "heading_new": "Novedades",
+        "pages_best": "mas-vendidos",
+        "heading_best": "Más vendidos",
+        "best_limit": 24,
+        "columns_desktop": 3,
+        "image_ratio": "square",
+        "show_secondary_image": true,
+        "color_scheme": "scheme-1",
+        "new_limit": 24
       }
     }
   },
   "order": [
     "main",
-    "slideshow_gGyUpp"
+    "um_landing"
   ]
 }

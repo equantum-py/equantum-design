@@ -1,0 +1,254 @@
+{% comment %}
+  Ultra Maison — megamenú editorial de relojería (desktop).
+
+  - Fila horizontal: mismos estilos que el menú aprobado.
+  - Columna izquierda: subcategorías (nivel 2).
+  - Panel derecho: relojes reales. Si la subcategoría tiene nivel 3, muestra esas
+    colecciones con su imagen; si no, muestra productos de la colección enlazada.
+  - Destacado opcional por categoría con bloques "Destacado megamenú".
+
+  Usage:
+  {% render 'ultramaison-mega-menu', section: section %}
+{% endcomment %}
+
+{%- liquid
+  assign um_products_limit = section.settings.um_mega_products | default: 4
+  assign um_show_price = section.settings.um_mega_show_price
+  assign um_currency_code = settings.currency_code_enabled
+-%}
+
+<um-mega-menu
+  class="um-mega"
+  style="--um-mega-media-bg: {{ section.settings.um_mega_image_bg | default: '#f6f6f4' }}; --um-mega-columns: {{ um_products_limit }};"
+>
+  <nav class="header__inline-menu um-mega__nav" aria-label="Menú principal">
+    <ul class="list-menu list-menu--inline" role="list">
+      {%- for link in section.settings.menu.links -%}
+        {%- assign top_index = forloop.index -%}
+        <li class="um-mega__item">
+          {%- if link.links != blank -%}
+            {%- liquid
+              assign promo = null
+              assign link_title_key = link.title | strip | downcase
+              for block in section.blocks
+                if block.type == 'um_mega_promo'
+                  assign block_key = block.settings.menu_item | strip | downcase
+                  if block_key == link_title_key
+                    assign promo = block
+                  endif
+                endif
+              endfor
+            -%}
+            <details class="um-mega__details" id="UmMega-{{ top_index }}">
+              <summary
+                id="UmMegaToggle-{{ top_index }}"
+                class="header__menu-item list-menu__item link focus-inset"
+              >
+                <span{% if link.child_active %} class="header__active-menu-item"{% endif %}>
+                  {{- link.title | escape -}}
+                </span>
+                {{- 'icon-caret.svg' | inline_asset_content -}}
+              </summary>
+
+              <div
+                class="um-mega__panel color-{{ section.settings.menu_color_scheme }}"
+                id="UmMegaPanel-{{ top_index }}"
+                tabindex="-1"
+              >
+                <div class="um-mega__inner{% if promo %} um-mega__inner--promo{% endif %}">
+                  <div class="um-mega__aside">
+                    <p class="um-mega__eyebrow">{{ link.title | escape }}</p>
+                    <ul class="um-mega__sublist" role="list">
+                      {%- for childlink in link.links -%}
+                        <li>
+                          <a
+                            href="{{ childlink.url }}"
+                            class="um-mega__sublink{% if forloop.first %} is-active{% endif %}"
+                            data-um-target="UmMegaStage-{{ top_index }}-{{ forloop.index }}"
+                            {% if childlink.current %}
+                              aria-current="page"
+                            {% endif %}
+                          >
+                            <span>{{ childlink.title | escape }}</span>
+                            <span class="um-mega__chevron" aria-hidden="true"></span>
+                          </a>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                    <a href="{{ link.url }}" class="um-mega__all">
+                      Ver todo {{ link.title | escape }}
+                    </a>
+                  </div>
+
+                  <div class="um-mega__stage">
+                    {%- for childlink in link.links -%}
+                      <div
+                        class="um-mega__view"
+                        id="UmMegaStage-{{ top_index }}-{{ forloop.index }}"
+                        {% unless forloop.first %}
+                          hidden
+                        {% endunless %}
+                      >
+                        <div class="um-mega__view-head">
+                          <p class="um-mega__view-title">{{ childlink.title | escape }}</p>
+                          <a href="{{ childlink.url }}" class="um-mega__view-link">
+                            {%- if childlink.type == 'collection_link' -%}Ver colección{%- else -%}Ver más{%- endif -%}
+                          </a>
+                        </div>
+
+                        {%- capture um_cards -%}
+                          {%- if childlink.links != blank -%}
+                            {%- for grandchildlink in childlink.links -%}
+                              <li class="um-mega__card">
+                                <a href="{{ grandchildlink.url }}" class="um-mega__card-link" title="{{ grandchildlink.title | escape }}">
+                                  <span class="um-mega__media um-mega__media--optional">
+                                    {%- render 'ultramaison-menu-media',
+                                      link: grandchildlink,
+                                      width: 480,
+                                      sizes: '(min-width: 1200px) 220px, 18vw',
+                                      class: 'um-mega__img'
+                                    -%}
+                                  </span>
+                                  <span class="um-mega__card-title">{{ grandchildlink.title | escape }}</span>
+                                </a>
+                              </li>
+                            {%- endfor -%}
+                          {%- elsif childlink.type == 'collection_link' -%}
+                            {%- assign um_count = 0 -%}
+                            {%- for product in childlink.object.products limit: 24 -%}
+                              {%- if um_count >= um_products_limit -%}{%- break -%}{%- endif -%}
+                              {%- if product.available == false or product.featured_image == blank -%}{%- continue -%}{%- endif -%}
+                              {%- assign um_count = um_count | plus: 1 -%}
+                              <li class="um-mega__card">
+                                <a href="{{ product.url }}" class="um-mega__card-link" title="{{ product.title | escape }}">
+                                  <span class="um-mega__media">
+                                    {%- if product.featured_image -%}
+                                      {{
+                                        product.featured_image
+                                        | image_url: width: 480
+                                        | image_tag:
+                                          loading: 'lazy',
+                                          widths: '240, 360, 480',
+                                          sizes: '(min-width: 1200px) 220px, 18vw',
+                                          class: 'um-mega__img',
+                                          alt: product.featured_image.alt | default: product.title
+                                      }}
+                                    {%- endif -%}
+                                  </span>
+                                  <span class="um-mega__card-title">{{ product.title | escape }}</span>
+                                  {%- if um_show_price -%}
+                                    {%- liquid
+                                      if um_currency_code
+                                        assign um_price = product.price | money_with_currency
+                                        assign um_compare = product.compare_at_price | money_with_currency
+                                      else
+                                        assign um_price = product.price | money
+                                        assign um_compare = product.compare_at_price | money
+                                      endif
+                                    -%}
+                                    <span class="um-mega__price">
+                                      {%- if product.price_varies -%}
+                                        <span>{{ 'products.product.price.from_price_html' | t: price: um_price }}</span>
+                                      {%- else -%}
+                                        {%- if product.compare_at_price > product.price -%}
+                                          <s>
+                                            <span class="visually-hidden">{{ 'products.product.price.regular_price' | t }}</span>
+                                            {{- um_compare -}}
+                                          </s>
+                                          <span class="visually-hidden">{{ 'products.product.price.sale_price' | t }}</span>
+                                        {%- endif -%}
+                                        <span>{{ um_price }}</span>
+                                      {%- endif -%}
+                                    </span>
+                                  {%- endif -%}
+                                </a>
+                              </li>
+                            {%- endfor -%}
+                          {%- endif -%}
+                        {%- endcapture -%}
+                        {%- assign um_cards = um_cards | strip -%}
+
+                        {%- if um_cards != blank -%}
+                          <ul class="um-mega__grid" role="list">
+                            {{ um_cards }}
+                          </ul>
+                        {%- else -%}
+                          {%- capture um_cover -%}
+                            {%- render 'ultramaison-menu-media',
+                              link: childlink,
+                              width: 960,
+                              sizes: '(min-width: 1200px) 480px, 40vw',
+                              class: 'um-mega__img'
+                            -%}
+                          {%- endcapture -%}
+                          {%- assign um_cover = um_cover | strip -%}
+                          {%- if um_cover != blank -%}
+                            <a href="{{ childlink.url }}" class="um-mega__cover">
+                              <span class="um-mega__media">{{ um_cover }}</span>
+                            </a>
+                          {%- endif -%}
+                        {%- endif -%}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+
+                  {%- if promo -%}
+                    {%- liquid
+                      assign promo_tag = 'div'
+                      if promo.settings.link != blank
+                        assign promo_tag = 'a'
+                      endif
+                    -%}
+                    <{{ promo_tag }}
+                      class="um-mega__promo"
+                      {% if promo_tag == 'a' %}
+                        href="{{ promo.settings.link }}"
+                      {% endif %}
+                      {{ promo.shopify_attributes }}
+                    >
+                      <span class="um-mega__promo-media">
+                        {%- if promo.settings.image != blank -%}
+                          {{
+                            promo.settings.image
+                            | image_url: width: 640
+                            | image_tag:
+                              loading: 'lazy',
+                              widths: '320, 480, 640',
+                              sizes: '300px',
+                              class: 'um-mega__promo-img',
+                              alt: promo.settings.heading
+                          }}
+                        {%- endif -%}
+                      </span>
+                      {%- if promo.settings.eyebrow != blank -%}
+                        <span class="um-mega__eyebrow">{{ promo.settings.eyebrow | escape }}</span>
+                      {%- endif -%}
+                      {%- if promo.settings.heading != blank -%}
+                        <span class="um-mega__promo-title">{{ promo.settings.heading | escape }}</span>
+                      {%- endif -%}
+                      {%- if promo.settings.button_label != blank and promo.settings.link != blank -%}
+                        <span class="um-mega__view-link">{{ promo.settings.button_label | escape }}</span>
+                      {%- endif -%}
+                    </{{ promo_tag }}>
+                  {%- endif -%}
+                </div>
+              </div>
+            </details>
+          {%- else -%}
+            <a
+              href="{{ link.url }}"
+              class="header__menu-item list-menu__item link link--text focus-inset"
+              {% if link.current %}
+                aria-current="page"
+              {% endif %}
+            >
+              <span{% if link.current %} class="header__active-menu-item"{% endif %}>
+                {{- link.title | escape -}}
+              </span>
+            </a>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </nav>
+</um-mega-menu>

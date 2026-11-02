@@ -34,7 +34,8 @@
   }
 
   /* Ocultamos lupa modal Dawn SOLO desktop */
-  .section-header .header > details-modal.header__search {
+  .section-header .header > details-modal.header__search,
+  .section-header .header__icons > details-modal.header__search {
     display: none !important;
   }
 

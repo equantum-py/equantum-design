@@ -1,0 +1,94 @@
+{% comment %}
+  Ultra Maison — megamenú V3: una línea de colección.
+  Con with_chips, agrega accesos a la versión de cada género (por ejemplo H / M): busca un enlace con el
+  mismo título dentro de las categorías de género del menú. Solo muestra los accesos que existen.
+
+  Accepts:
+  - title: {String} título del enlace (required)
+  - url: {String} destino del enlace (required)
+  - current: {Boolean} si es la página actual
+  - with_chips: {Boolean} mostrar accesos por género
+  - g1_link / g2_link: {Object} enlaces de nivel 1 de cada género (pueden ser nulos)
+  - section: {Object} sección del encabezado (para etiquetas H / M)
+  - meta: {String} dato bajo el nombre, en la misma fila que los accesos (p. ej. "9 relojes"; opcional)
+  - chip_1 / chip_2: {String} enlaces por género ya resueltos (navegación automática; no se busca en el menú)
+
+  Usage:
+  {% render 'ultramaison-nav-line', title: link.title, url: link.url, with_chips: true, g1_link: g1, g2_link: g2, section: section %}
+{% endcomment %}
+
+{%- liquid
+  assign line_key = title | handleize
+  if chip_1 != blank or chip_2 != blank
+    assign with_chips = false
+  endif
+  assign chip_1 = chip_1 | default: ''
+  assign chip_2 = chip_2 | default: ''
+  if with_chips
+    for fam in g1_link.links
+      if fam.links == blank
+        continue
+      endif
+      for item in fam.links
+        assign item_key = item.title | handleize
+        if item_key == line_key
+          assign chip_1 = item.url
+          break
+        endif
+      endfor
+      if chip_1 != ''
+        break
+      endif
+    endfor
+    for fam in g2_link.links
+      if fam.links == blank
+        continue
+      endif
+      for item in fam.links
+        assign item_key = item.title | handleize
+        if item_key == line_key
+          assign chip_2 = item.url
+          break
+        endif
+      endfor
+      if chip_2 != ''
+        break
+      endif
+    endfor
+  endif
+-%}
+<span class="umv3__line">
+  <a
+    href="{{ url }}"
+    class="umv3__line-name"
+    {% if current %}
+      aria-current="page"
+    {% endif %}
+  >
+    {{- title | escape -}}
+  </a>
+  {%- if meta != blank -%}<span class="umv3__line-sub"><span class="umv3__line-meta">{{ meta | escape }}</span>{%- endif -%}
+  {%- if chip_1 != '' or chip_2 != '' -%}
+    <span class="umv3__chips">
+      {%- if chip_1 != '' -%}
+        <a
+          href="{{ chip_1 }}"
+          class="umv3__chip"
+          aria-label="{{ title | escape }} — {{ section.settings.um_v3_gender_1 | escape }}"
+        >
+          {{- section.settings.um_v3_gender_1_short | default: 'H' | escape -}}
+        </a>
+      {%- endif -%}
+      {%- if chip_2 != '' -%}
+        <a
+          href="{{ chip_2 }}"
+          class="umv3__chip"
+          aria-label="{{ title | escape }} — {{ section.settings.um_v3_gender_2 | escape }}"
+        >
+          {{- section.settings.um_v3_gender_2_short | default: 'M' | escape -}}
+        </a>
+      {%- endif -%}
+    </span>
+  {%- endif -%}
+  {%- if meta != blank -%}</span>{%- endif -%}
+</span>

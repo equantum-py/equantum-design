@@ -215,6 +215,82 @@
       font-size: 13px;
     }
   }
+
+  /* ULTRA MAISON V4 — COMMERCIAL PREMIUM */
+
+  #shopify-section-{{ section.id }} .ultra-commercial__banner {
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  #shopify-section-{{ section.id }} .ultra-commercial__media img {
+    transition: transform 850ms cubic-bezier(.22, 1, .36, 1);
+  }
+
+  #shopify-section-{{ section.id }} .ultra-commercial__content {
+    position: relative;
+    z-index: 2;
+  }
+
+  #shopify-section-{{ section.id }} .ultra-commercial__eyebrow {
+    font-size: 11px;
+    letter-spacing: .2em;
+    font-weight: 500;
+  }
+
+  #shopify-section-{{ section.id }} .ultra-commercial__title {
+    font-family: var(--font-heading-family);
+    font-weight: 400;
+    letter-spacing: -.025em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  #shopify-section-{{ section.id }} .ultra-commercial__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid currentColor;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+
+  #shopify-section-{{ section.id }} .ultra-commercial__cta-arrow {
+    transition: transform 250ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    #shopify-section-{{ section.id }} .ultra-commercial__banner:hover
+    .ultra-commercial__media img {
+      transform: scale(1.025);
+    }
+
+    #shopify-section-{{ section.id }} .ultra-commercial__banner:hover
+    .ultra-commercial__cta-arrow {
+      transform: translateX(4px);
+    }
+  }
+
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} .ultra-commercial__content {
+      padding: 24px 20px;
+    }
+
+    #shopify-section-{{ section.id }} .ultra-commercial__title {
+      font-size: clamp(28px, 8vw, 40px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #shopify-section-{{ section.id }} .ultra-commercial__media img,
+    #shopify-section-{{ section.id }} .ultra-commercial__cta-arrow {
+      transition: none;
+      transform: none;
+    }
+  }
+
 {%- endstyle -%}
 
 <section class="ultra-commercial color-{{ section.settings.color_scheme }} gradient">

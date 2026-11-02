@@ -1,0 +1,64 @@
+{% comment %}
+  Ultra Maison — producto destacado del megamenú (lista compacta).
+  Precio con el formato monetario de la tienda (money / money_with_currency).
+
+  Accepts:
+  - product: {Object} producto (required)
+  - section: {Object} sección del header (required)
+
+  Usage:
+  {% render 'ultramaison-mega-product', product: product, section: section %}
+{% endcomment %}
+
+{%- liquid
+  if settings.currency_code_enabled
+    assign um_price = product.price | money_with_currency
+    assign um_compare = product.compare_at_price | money_with_currency
+  else
+    assign um_price = product.price | money
+    assign um_compare = product.compare_at_price | money
+  endif
+  assign um_on_sale = false
+  if product.compare_at_price > product.price
+    assign um_on_sale = true
+  endif
+-%}
+
+<li class="um-mega__product">
+  <a href="{{ product.url }}" class="um-mega__product-link" title="{{ product.title | escape }}">
+    <span class="um-mega__product-media">
+      {{
+        product.featured_image
+        | image_url: width: 160
+        | image_tag:
+          loading: 'lazy',
+          widths: '80, 120, 160',
+          sizes: '72px',
+          class: 'um-mega__product-img',
+          alt: ''
+      }}
+    </span>
+    <span class="um-mega__product-info">
+      {%- if section.settings.um_mega_show_badges and um_on_sale -%}
+        <span class="um-mega__badge">{{ 'products.product.on_sale' | t }}</span>
+      {%- endif -%}
+      <span class="um-mega__product-title">{{ product.title | escape }}</span>
+      {%- if section.settings.um_mega_show_price -%}
+        <span class="um-mega__price">
+          {%- if product.price_varies -%}
+            <span>{{ 'products.product.price.from_price_html' | t: price: um_price }}</span>
+          {%- else -%}
+            {%- if section.settings.um_mega_show_compare and um_on_sale -%}
+              <s>
+                <span class="visually-hidden">{{ 'products.product.price.regular_price' | t }}</span>
+                {{- um_compare -}}
+              </s>
+              <span class="visually-hidden">{{ 'products.product.price.sale_price' | t }}</span>
+            {%- endif -%}
+            <span>{{ um_price }}</span>
+          {%- endif -%}
+        </span>
+      {%- endif -%}
+    </span>
+  </a>
+</li>

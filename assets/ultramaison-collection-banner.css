@@ -228,3 +228,46 @@
     object-position: center top;
   }
 }
+
+
+/* ULTRA MAISON V4 — COLLECTION PREMIUM */
+
+.ultramaison-collection-banner .collection__title .title {
+  font-family: var(--font-heading-family);
+  font-weight: 400;
+  letter-spacing: -.025em;
+  line-height: 1.12;
+}
+
+.ultramaison-collection-banner .collection__description {
+  max-width: 640px;
+  line-height: 1.7;
+}
+
+.ultramaison-collection-banner .um-collection-banner-link {
+  overflow: hidden;
+}
+
+.ultramaison-collection-banner .um-collection-banner-image {
+  transition: transform 850ms cubic-bezier(.22, 1, .36, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ultramaison-collection-banner .um-collection-banner-link:hover
+  .um-collection-banner-image {
+    transform: scale(1.025);
+  }
+}
+
+@media (max-width: 749px) {
+  .ultramaison-collection-banner .collection__title .title {
+    line-height: 1.18;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ultramaison-collection-banner .um-collection-banner-image {
+    transition: none;
+    transform: none;
+  }
+}
