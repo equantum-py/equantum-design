@@ -1,0 +1,464 @@
+{% comment %}
+  Ultra Maison — Fase 4: páginas de destino "Ver todo" (Caballeros, Damas, Ofertas, Novedades, Más vendidos,
+  Correa de silicona, Elegante, Deportivos…).
+
+  Muestra relojes REALES de la Tienda online según la página (solo lectura; no crea ni modifica productos,
+  colecciones ni precios):
+  - Hombre / Mujer: relojes de las colecciones cuyo título o handle dice "Hombre(s)" / "Mujer(es)" (el mismo
+    criterio del Megamenú V3), más accesos a esas colecciones.
+  - Ofertas: relojes con precio de comparación mayor que el precio.
+  - Novedades: los más nuevos primero.
+  - Más vendidos: el orden "Más vendidos" de Shopify (se carga desde Todos los productos con la Section
+    Rendering API; sin JavaScript se ve el catálogo y un enlace a ese orden).
+  - Bloques "Página de estilo": la página indicada muestra los relojes de las colecciones elegidas o con la
+    etiqueta indicada. Sin criterio, muestra todo el catálogo.
+  - Cualquier otra página: título y contenido de la página (como "Página" del tema).
+{% endcomment %}
+
+{%- liquid
+  assign um_mode = 'page'
+  assign um_heading = ''
+  assign um_style = null
+  assign um_key = page.handle | default: ''
+  assign probe = ',' | append: um_key | append: ','
+
+  if template.name == 'collection'
+    # Llamada de la Section Rendering API desde la página "Más vendidos"
+    assign um_mode = 'best'
+  else
+    assign list_men = section.settings.pages_men | remove: ' ' | prepend: ',' | append: ','
+    assign list_women = section.settings.pages_women | remove: ' ' | prepend: ',' | append: ','
+    assign list_sale = section.settings.pages_sale | remove: ' ' | prepend: ',' | append: ','
+    assign list_new = section.settings.pages_new | remove: ' ' | prepend: ',' | append: ','
+    assign list_best = section.settings.pages_best | remove: ' ' | prepend: ',' | append: ','
+    if list_men contains probe
+      assign um_mode = 'men'
+      assign um_heading = section.settings.heading_men
+    elsif list_women contains probe
+      assign um_mode = 'women'
+      assign um_heading = section.settings.heading_women
+    elsif list_sale contains probe
+      assign um_mode = 'sale'
+      assign um_heading = section.settings.heading_sale
+    elsif list_new contains probe
+      assign um_mode = 'new'
+      assign um_heading = section.settings.heading_new
+    elsif list_best contains probe
+      assign um_mode = 'best'
+      assign um_heading = section.settings.heading_best
+    else
+      for block in section.blocks
+        assign b_key = block.settings.page_handle | strip | handleize
+        if b_key != blank and b_key == um_key
+          assign um_mode = 'style'
+          assign um_style = block
+          assign um_heading = block.settings.heading
+          break
+        endif
+      endfor
+    endif
+  endif
+
+  if um_heading == blank and page
+    assign um_heading = page.title
+  endif
+
+  # Palabras de género (las mismas del Megamenú V3)
+  assign g1_keys = ',hombre,hombres,caballero,caballeros,men,'
+  assign g2_keys = ',mujer,mujeres,dama,damas,women,'
+  # Género escrito en el título del reloj: tiene prioridad sobre la colección ("Sea Men 42mm" cargado en una
+  # colección de mujer se muestra en Hombre)
+  assign t1_keys = ',men,man,hombre,hombres,caballero,caballeros,'
+  assign t2_keys = ',lady,women,woman,mujer,mujeres,dama,damas,'
+
+  assign um_style_handles = ','
+  assign um_style_tag = ''
+  if um_style
+    for c in um_style.settings.collections
+      assign um_style_handles = um_style_handles | append: c.handle | append: ','
+    endfor
+    assign um_style_tag = um_style.settings.tag | strip
+  endif
+  assign um_style_all = false
+  if um_mode == 'style' and um_style_handles == ',' and um_style_tag == blank
+    assign um_style_all = true
+  endif
+
+  assign um_limit = 250
+  if um_mode == 'best'
+    assign um_limit = section.settings.best_limit
+  elsif um_mode == 'new'
+    assign um_limit = section.settings.new_limit
+  endif
+-%}
+
+{%- if um_mode == 'page' -%}
+  {{ 'section-main-page.css' | asset_url | stylesheet_tag }}
+  <div class="page-width page-width--narrow um-landing__page">
+    <h1 class="main-page-title page-title h0">{{ page.title | escape }}</h1>
+    <div class="rte">{{ page.content }}</div>
+  </div>
+{%- else -%}
+  {{ 'component-card.css' | asset_url | stylesheet_tag }}
+  {{ 'component-price.css' | asset_url | stylesheet_tag }}
+  {{ 'template-collection.css' | asset_url | stylesheet_tag }}
+  {{ 'ultramaison-landing.css' | asset_url | stylesheet_tag }}
+
+  {%- capture um_cards -%}
+    {%- liquid
+      assign shown = 0
+      assign seen = ','
+      assign chips = ','
+      assign skip_styles = false
+    -%}
+    {%- if template.name == 'collection' -%}
+      {%- assign um_src = collection -%}
+    {%- else -%}
+      {%- assign um_src = collections.all -%}
+    {%- endif -%}
+    {%- paginate um_src.products by 250 -%}
+    {%- assign pool = um_src.products -%}
+    {%- if um_mode == 'new' -%}
+      {%- assign pool = um_src.products | sort: 'created_at' | reverse -%}
+    {%- endif -%}
+
+    {%- for product in pool -%}
+      {%- liquid
+        if shown >= um_limit
+          break
+        endif
+        assign p_probe = ',' | append: product.handle | append: ','
+        if seen contains p_probe
+          continue
+        endif
+
+        assign ok = false
+        case um_mode
+          when 'best'
+            assign ok = true
+          when 'sale'
+            if product.compare_at_price > product.price
+              assign ok = true
+            endif
+          when 'new'
+            assign ok = true
+          when 'style'
+            if um_style_all
+              assign ok = false
+            elsif um_style_tag != blank and product.tags contains um_style_tag
+              assign ok = true
+            else
+              for c in product.collections
+                assign c_probe = ',' | append: c.handle | append: ','
+                if um_style_handles contains c_probe
+                  assign ok = true
+                  break
+                endif
+              endfor
+            endif
+          else
+            # men / women: primero el género del título del reloj; si no lo dice, el de sus colecciones
+            assign t_gender = 0
+            assign t_words = product.title | handleize | split: '-'
+            for w in t_words
+              assign w_probe = ',' | append: w | append: ','
+              if t1_keys contains w_probe
+                assign t_gender = 1
+                break
+              elsif t2_keys contains w_probe
+                assign t_gender = 2
+                break
+              endif
+            endfor
+            if um_mode == 'men' and t_gender == 2
+              continue
+            elsif um_mode == 'women' and t_gender == 1
+              continue
+            endif
+            if um_mode == 'men' and t_gender == 1
+              assign ok = true
+            elsif um_mode == 'women' and t_gender == 2
+              assign ok = true
+            endif
+            for c in product.collections
+              assign gender = 0
+              assign words = c.title | handleize | split: '-'
+              assign h_words = c.handle | split: '-'
+              assign words = words | concat: h_words
+              for w in words
+                assign w_probe = ',' | append: w | append: ','
+                if g1_keys contains w_probe
+                  assign gender = 1
+                  break
+                elsif g2_keys contains w_probe
+                  assign gender = 2
+                  break
+                endif
+              endfor
+              if um_mode == 'men' and gender == 1
+                assign ok = true
+              elsif um_mode == 'women' and gender == 2
+                assign ok = true
+              else
+                continue
+              endif
+              assign c_probe = ',' | append: c.handle | append: ','
+              unless chips contains c_probe
+                assign chips = chips | append: c.handle | append: ','
+              endunless
+            endfor
+        endcase
+
+        unless ok
+          continue
+        endunless
+        assign seen = seen | append: product.handle | append: ','
+        assign shown = shown | plus: 1
+        assign lazy = true
+        if shown <= 2
+          assign lazy = false
+        endif
+      -%}
+      <li class="grid__item">
+        {% render 'card-product',
+          card_product: product,
+          media_aspect_ratio: section.settings.image_ratio,
+          image_shape: 'default',
+          show_secondary_image: section.settings.show_secondary_image,
+          show_vendor: false,
+          show_rating: false,
+          lazy_load: lazy,
+          skip_styles: skip_styles,
+          quick_add: 'none',
+          section_id: section.id,
+          product_view_context: 'collection'
+        %}
+      </li>
+      {%- assign skip_styles = true -%}
+    {%- endfor -%}
+    {%- endpaginate -%}
+  {%- endcapture -%}
+
+  {%- liquid
+    if shown == 1
+      assign um_count_label = '1 reloj'
+    else
+      assign um_count_label = shown | append: ' relojes'
+    endif
+  -%}
+
+  {%- if template.name == 'collection' -%}
+    {%- comment -%} Respuesta para "Más vendidos": solo la cuadrícula {%- endcomment -%}
+    <ul class="grid product-grid grid--2-col-tablet-down grid--{{ section.settings.columns_desktop }}-col-desktop" data-um-best-grid data-count="{{ um_count_label | escape }}">
+      {{ um_cards }}
+    </ul>
+  {%- else -%}
+    <div class="um-landing color-{{ section.settings.color_scheme }} gradient" data-um-mode="{{ um_mode }}">
+      <div class="collection-hero">
+        <div class="collection-hero__inner page-width">
+          <div class="collection-hero__text-wrapper">
+            <h1 class="collection-hero__title">{{ um_heading | escape }}</h1>
+            {%- if page.content != blank -%}
+              <div class="collection-hero__description rte">{{ page.content }}</div>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+
+      {%- comment -%} Accesos a las colecciones reales (Hombre / Mujer), un nombre una sola vez {%- endcomment -%}
+      {%- assign chip_handles = chips | split: ',' -%}
+      {%- if chip_handles.size > 1 -%}
+        {%- liquid
+          assign chip_rows = ''
+          for h in chip_handles
+            if h == blank
+              continue
+            endif
+            assign c = collections[h]
+            if c == blank or c.products_count == 0
+              continue
+            endif
+            assign base = ''
+            assign words = c.title | split: ' '
+            for word in words
+              assign wk = word | handleize
+              if wk == blank
+                continue
+              endif
+              assign w_probe = ',' | append: wk | append: ','
+              if g1_keys contains w_probe or g2_keys contains w_probe
+                continue
+              endif
+              assign cw = word | capitalize
+              assign base = base | append: ' ' | append: cw
+            endfor
+            assign base = base | strip | default: c.title
+            assign chip_rows = chip_rows | append: base | append: '¦' | append: c.handle | append: '¦' | append: c.products_count | append: '§'
+          endfor
+          assign chip_list = chip_rows | split: '§' | sort_natural
+          assign chip_names = ','
+        -%}
+        <nav class="um-landing__chips page-width" aria-label="Colecciones">
+          <ul class="um-landing__chip-list" role="list">
+            {%- for row in chip_list -%}
+              {%- liquid
+                assign parts = row | split: '¦'
+                assign n_key = parts[0] | handleize
+                assign n_probe = ',' | append: n_key | append: ','
+                if chip_names contains n_probe
+                  continue
+                endif
+                assign chip_names = chip_names | append: n_key | append: ','
+                # Si hay dos colecciones con el mismo nombre, se enlaza la que tiene más relojes
+                assign best_h = parts[1]
+                assign best_n = parts[2] | plus: 0
+                for other in chip_list
+                  assign o = other | split: '¦'
+                  assign o_key = o[0] | handleize
+                  assign o_n = o[2] | plus: 0
+                  if o_key == n_key and o_n > best_n
+                    assign best_h = o[1]
+                    assign best_n = o_n
+                  endif
+                endfor
+              -%}
+              <li>
+                <a class="um-landing__chip" href="{{ collections[best_h].url }}">{{ parts[0] | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+
+      <div class="um-landing__body page-width">
+        <p class="um-landing__count" role="status" data-um-count>{{ um_count_label }}</p>
+        {%- if shown > 0 -%}
+          <div class="collection">
+            <ul
+              class="grid product-grid grid--2-col-tablet-down grid--{{ section.settings.columns_desktop }}-col-desktop"
+              {% if um_mode == 'best' %}
+                data-um-best="{{ routes.all_products_collection_url }}?sort_by=best-selling&section_id=ultramaison-landing"
+              {% endif %}
+            >
+              {{ um_cards }}
+            </ul>
+          </div>
+          {%- if um_mode == 'best' -%}
+            <noscript>
+              <p class="um-landing__more">
+                <a class="button button--secondary" href="{{ routes.all_products_collection_url }}?sort_by=best-selling">Ver por más vendidos</a>
+              </p>
+            </noscript>
+          {%- endif -%}
+        {%- else -%}
+          <div class="um-landing__empty">
+            <p>Por el momento no hay relojes disponibles en esta sección.</p>
+            <a class="button" href="{{ routes.all_products_collection_url }}">Ver todos los relojes</a>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+    {%- if um_mode == 'best' -%}
+      <script src="{{ 'ultramaison-landing.js' | asset_url }}" defer="defer"></script>
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "UM: página Ver todo",
+  "tag": "section",
+  "class": "section um-landing-section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Muestra relojes reales de la Tienda online según la página. Las demás páginas muestran su título y contenido."
+    },
+    {
+      "type": "header",
+      "content": "Páginas (handle, separados por coma)"
+    },
+    { "type": "text", "id": "pages_men", "label": "Hombre", "default": "caballeros" },
+    { "type": "text", "id": "heading_men", "label": "Título Hombre", "default": "Relojes para hombre" },
+    { "type": "text", "id": "pages_women", "label": "Mujer", "default": "damas" },
+    { "type": "text", "id": "heading_women", "label": "Título Mujer", "default": "Relojes para mujer" },
+    { "type": "text", "id": "pages_sale", "label": "Ofertas (precio de comparación)", "default": "ofertas" },
+    { "type": "text", "id": "heading_sale", "label": "Título Ofertas", "default": "Ofertas" },
+    { "type": "text", "id": "pages_new", "label": "Novedades (más nuevos primero)", "default": "novedades" },
+    { "type": "text", "id": "heading_new", "label": "Título Novedades", "default": "Novedades" },
+    {
+      "type": "range",
+      "id": "new_limit",
+      "label": "Relojes en Novedades",
+      "min": 4,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    { "type": "text", "id": "pages_best", "label": "Más vendidos", "default": "mas-vendidos" },
+    { "type": "text", "id": "heading_best", "label": "Título Más vendidos", "default": "Más vendidos" },
+    {
+      "type": "range",
+      "id": "best_limit",
+      "label": "Relojes en Más vendidos",
+      "min": 4,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Cuadrícula"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columnas en escritorio",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Proporción de la foto",
+      "options": [
+        { "value": "adapt", "label": "Adaptar a la imagen" },
+        { "value": "portrait", "label": "Vertical" },
+        { "value": "square", "label": "Cuadrada" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "label": "Segunda foto al pasar el cursor",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de color",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "style",
+      "name": "Página de estilo",
+      "settings": [
+        { "type": "text", "id": "page_handle", "label": "Página (handle)", "info": "Ej.: elegante" },
+        { "type": "text", "id": "heading", "label": "Título" },
+        {
+          "type": "collection_list",
+          "id": "collections",
+          "label": "Colecciones",
+          "info": "Relojes de estas colecciones. Sin colecciones ni etiqueta se muestra todo el catálogo."
+        },
+        { "type": "text", "id": "tag", "label": "Etiqueta de producto", "info": "Ej.: Silicone" }
+      ]
+    }
+  ]
+}
+{% endschema %}

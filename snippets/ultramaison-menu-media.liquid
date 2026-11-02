@@ -1,0 +1,42 @@
+{% comment %}
+  Ultra Maison — imagen real para un enlace del menú.
+  Usa la imagen de la colección o, si no tiene, la del primer producto.
+  No genera nada si el enlace no apunta a una colección o producto con imagen.
+
+  Accepts:
+  - link: {Object} enlace del menú (required)
+  - width: {Number} ancho base de la imagen (default 480)
+  - sizes: {String} atributo sizes
+  - class: {String} clase de la imagen
+
+  Usage:
+  {% render 'ultramaison-menu-media', link: childlink, width: 480, sizes: '220px' %}
+{% endcomment %}
+
+{%- liquid
+  assign um_media = null
+  case link.type
+    when 'collection_link'
+      assign um_media = link.object.featured_image | default: link.object.products.first.featured_image
+    when 'product_link'
+      assign um_media = link.object.featured_image
+  endcase
+
+  assign um_width = width | default: 480
+  assign um_w1 = um_width | divided_by: 2
+  assign um_w2 = um_width | times: 3 | divided_by: 4
+-%}
+{%- capture um_widths -%}{{ um_w1 }}, {{ um_w2 }}, {{ um_width }}{%- endcapture -%}
+
+{%- if um_media != blank -%}
+  {{
+    um_media
+    | image_url: width: um_width
+    | image_tag:
+      loading: 'lazy',
+      widths: um_widths,
+      sizes: sizes,
+      class: class,
+      alt: link.title
+  }}
+{%- endif -%}

@@ -1,0 +1,92 @@
+{% comment %}
+  Ultra Maison — megamenú V3, navegación automática: una categoría de la barra de escritorio.
+  Con colecciones o relojes abre un panel compacto; si no, es un enlace directo.
+
+  Accepts:
+  - section: {Object} sección del encabezado
+  - index: {Number} posición (para IDs únicos)
+  - title / url: {String} nombre y destino real de la categoría (url puede faltar)
+  - is_hl: {Boolean} categoría destacada (OFERTAS)
+  - has_list / count / list: colecciones (HTML de tarjetas ya armado)
+  - side: {String} HTML de relojes destacados y promoción
+  - styles: {String} HTML de los demás enlaces del menú del Encabezado (solo COLECCIONES)
+  - block: {Object} bloque "Megamenú V3: vitrina" de la categoría (puede faltar)
+  - cards: {Boolean} tarjetas con foto o lista compacta
+  - all_prefix: {String} texto de "Explorar"
+
+  Usage:
+  {% render 'ultramaison-nav-auto-item', section: section, index: 1, title: 'Hombre', url: '/collections/x', … %}
+{% endcomment %}
+
+{%- liquid
+  assign has_panel = false
+  if has_list or side != blank
+    assign has_panel = true
+  endif
+  assign with_side = false
+  if has_list and side != blank
+    assign with_side = true
+  endif
+-%}
+<li class="umv3__item">
+  {%- if has_panel -%}
+    <details class="umv3__details" id="UmV3-{{ index }}">
+      <summary
+        class="header__menu-item list-menu__item link focus-inset umv3__top{% if is_hl %} umv3__top--hl{% endif %}"
+        id="UmV3Toggle-{{ index }}"
+      >
+        <span>{{- title | escape -}}</span>
+        {{- 'icon-caret.svg' | inline_asset_content -}}
+      </summary>
+      <div
+        class="umv3__panel color-{{ section.settings.menu_color_scheme }}"
+        id="UmV3Panel-{{ index }}"
+        role="region"
+        aria-labelledby="UmV3Toggle-{{ index }}"
+        tabindex="-1"
+      >
+        <div class="umv3__inner{% if with_side %} umv3__inner--side{% endif %}">
+          <div class="umv3__aside">
+            <p class="umv3__cat{% if is_hl %} umv3__cat--hl{% endif %}">{{ title | escape }}</p>
+            {%- if block and block.settings.intro != blank -%}
+              <p class="umv3__intro">{{ block.settings.intro | escape }}</p>
+            {%- elsif has_list -%}
+              <p class="umv3__intro">
+                {{- count }} colecciones
+              </p>
+            {%- endif -%}
+            {%- if styles != blank -%}
+              <p class="umv3__label">Estilos</p>
+              <ul class="umv3__aside-list" role="list">{{ styles }}</ul>
+            {%- endif -%}
+            {%- if url != blank -%}
+              <a href="{{ url }}" class="umv3__cta{% if is_hl %} umv3__cta--hl{% endif %}">
+                <span>{{ all_prefix | escape }} {{ title | escape }}</span>
+                <span class="umv3__cta-arrow" aria-hidden="true"></span>
+              </a>
+            {%- endif -%}
+          </div>
+          <div class="umv3__stage">
+            {%- if has_list -%}
+              <div class="umv3__view">
+                <ul class="umv3__grid{% unless cards %} umv3__grid--list{% endunless %}" role="list">{{ list }}</ul>
+              </div>
+            {%- else -%}
+              {{ side }}
+            {%- endif -%}
+          </div>
+          {%- if with_side -%}
+            <div class="umv3__side">{{ side }}</div>
+          {%- endif -%}
+        </div>
+      </div>
+    </details>
+  {%- else -%}
+    <a
+      href="{{ url }}"
+      class="header__menu-item list-menu__item link link--text focus-inset umv3__top{% if is_hl %} umv3__top--hl{% endif %}"
+    >
+      <span>{{- title | escape -}}</span>
+    </a>
+  {%- endif -%}
+</li>

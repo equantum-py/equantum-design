@@ -1,14 +1,80 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "main-page",
+      "disabled": true,
       "settings": {
         "padding_top": 36,
         "padding_bottom": 28
       }
+    },
+    "um_landing": {
+      "type": "ultramaison-landing",
+      "blocks": {
+        "style_correa": {
+          "type": "style",
+          "settings": {
+            "page_handle": "correa-silicona",
+            "heading": "Correa de silicona",
+            "collections": [],
+            "tag": "Silicone"
+          }
+        },
+        "style_elegante": {
+          "type": "style",
+          "settings": {
+            "page_handle": "elegante",
+            "heading": "Elegante",
+            "collections": [],
+            "tag": ""
+          }
+        },
+        "style_deportivos": {
+          "type": "style",
+          "settings": {
+            "page_handle": "deportivos",
+            "heading": "Deportivos",
+            "collections": [],
+            "tag": ""
+          }
+        }
+      },
+      "block_order": [
+        "style_correa",
+        "style_elegante",
+        "style_deportivos"
+      ],
+      "settings": {
+        "pages_men": "caballeros",
+        "heading_men": "Relojes para hombre",
+        "pages_women": "damas",
+        "heading_women": "Relojes para mujer",
+        "pages_sale": "ofertas",
+        "heading_sale": "Ofertas",
+        "pages_new": "novedades",
+        "heading_new": "Novedades",
+        "pages_best": "mas-vendidos",
+        "heading_best": "Más vendidos",
+        "best_limit": 24,
+        "columns_desktop": 3,
+        "image_ratio": "square",
+        "show_secondary_image": true,
+        "color_scheme": "scheme-1",
+        "new_limit": 24
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "um_landing"
   ]
 }

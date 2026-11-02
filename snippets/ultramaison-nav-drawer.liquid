@@ -1,0 +1,278 @@
+{% comment %}
+  Ultra Maison — megamenú V3 "vitrina" (celular). Va dentro del drawer de Dawn (snippets/header-drawer.liquid),
+  que sigue manejando la apertura, el cierre, el foco y los selectores de país e idioma.
+
+  Usa el mismo menú y los mismos bloques que el escritorio (bloque "Megamenú V3: menú"; si falta, la
+  navegación automática de 'ultramaison-nav-auto'):
+  - Categorías con contenido (subelementos o vitrina) como pestañas deslizables arriba; sin la opción de
+    pestañas, como acordeones.
+  - Familias como acordeones (uno abierto a la vez). Sus colecciones, en una fila deslizable de tarjetas con
+    foto: nada de listas largas.
+  - Relojes destacados de la categoría en un carrusel, si "Mostrar también en el celular" está activo.
+  - Categorías sin contenido como accesos al final.
+
+  Nota técnica: el JS del drawer de Dawn cierra el menú con cualquier <button>. Por eso las pestañas y
+  acordeones se manejan en fase de captura en assets/ultramaison-nav.js.
+
+  Usage:
+  {% render 'ultramaison-nav-drawer', section: section %}
+{% endcomment %}
+
+{%- liquid
+  assign um_menu = null
+  for block in section.blocks
+    if block.type == 'um_v3_menu' and block.settings.menu != blank
+      assign um_menu = block.settings.menu
+      break
+    endif
+  endfor
+-%}
+
+{%- comment -%} Sin menú propio: navegación automática (nunca la navegación anterior) {%- endcomment -%}
+{%- if um_menu == null -%}
+  {%- capture um_data -%}{%- render 'ultramaison-nav-auto-data', section: section -%}{%- endcapture -%}
+  {%- render 'ultramaison-nav-auto', section: section, data: um_data, context: 'mobile' -%}
+{%- else -%}
+{%- liquid
+
+  assign um_cards = true
+  if section.settings.um_v3_card_style == 'list'
+    assign um_cards = false
+  endif
+  assign um_col_key = section.settings.um_v3_collections_title | handleize
+  assign um_hl_key = section.settings.um_v3_highlight_title | handleize
+  assign um_g1_key = section.settings.um_v3_gender_1 | handleize
+  assign um_g2_key = section.settings.um_v3_gender_2 | handleize
+  assign um_g1_link = null
+  assign um_g2_link = null
+  for um_link in um_menu.links
+    assign um_key = um_link.title | handleize
+    if um_g1_key != blank and um_key == um_g1_key
+      assign um_g1_link = um_link
+    elsif um_g2_key != blank and um_key == um_g2_key
+      assign um_g2_link = um_link
+    endif
+  endfor
+
+  assign use_tabs = section.settings.um_v3_mobile_tabs
+  assign all_prefix = section.settings.um_v3_all_prefix | default: 'Explorar'
+  assign panel_keys = ''
+  assign direct_idx = ','
+-%}
+
+{%- comment -%} 1.ª pasada: contenido de cada categoría (se decide si es pestaña o acceso directo) {%- endcomment -%}
+{%- capture um_panels -%}
+  {%- assign tab_index = 0 -%}
+  {%- for link in um_menu.links -%}
+    {%- liquid
+      assign top_key = link.title | handleize
+      assign is_hl = false
+      if um_hl_key != blank and top_key == um_hl_key
+        assign is_hl = true
+      endif
+      assign is_collections = false
+      if um_col_key != blank and top_key == um_col_key
+        assign is_collections = true
+      endif
+      assign panel_block = null
+      for block in section.blocks
+        if block.type == 'um_v3_panel'
+          assign block_key = block.settings.menu_item | handleize
+          if block_key == top_key
+            assign panel_block = block
+            break
+          endif
+        endif
+      endfor
+      assign fam_count = 0
+      for childlink in link.links
+        if childlink.links != blank
+          assign fam_count = fam_count | plus: 1
+        endif
+      endfor
+    -%}
+
+    {%- capture feat -%}
+      {%- if panel_block -%}
+        {%- render 'ultramaison-nav-featured', block: panel_block, context: 'mobile' -%}
+      {%- endif -%}
+    {%- endcapture -%}
+    {%- assign feat = feat | strip -%}
+
+    {%- if link.links == blank and feat == blank -%}
+      {%- assign direct_idx = direct_idx | append: forloop.index | append: ',' -%}
+      {%- continue -%}
+    {%- endif -%}
+
+    {%- liquid
+      assign tab_index = tab_index | plus: 1
+      assign tab_class = ''
+      if is_hl
+        assign tab_class = ' umv3-d__tab--hl'
+      endif
+      assign panel_keys = panel_keys | append: tab_index | append: '¦' | append: link.title | append: '¦' | append: tab_class | append: '§'
+    -%}
+
+    {%- capture panel_body -%}
+      {%- if panel_block and panel_block.settings.intro != blank -%}
+        <p class="umv3-d__intro">{{ panel_block.settings.intro | escape }}</p>
+      {%- endif -%}
+
+      {%- if link.url != blank and link.url != '#' -%}
+        <a href="{{ link.url }}" class="umv3-d__row umv3-d__row--strong{% if is_hl %} umv3-d__row--hl{% endif %}">
+          <span>{{ all_prefix | escape }} {{ link.title | escape }}</span>
+          <span class="umv3-d__arrow" aria-hidden="true"></span>
+        </a>
+      {%- endif -%}
+
+      {%- if fam_count > 0 -%}
+        {%- assign fam_index = 0 -%}
+        {%- for childlink in link.links -%}
+          {%- if childlink.links != blank -%}
+            {%- assign fam_index = fam_index | plus: 1 -%}
+            {%- assign acc_id = 'UmV3Acc-' | append: tab_index | append: '-' | append: fam_index -%}
+            <div class="umv3-d__acc">
+              <button
+                type="button"
+                class="umv3-d__acc-btn"
+                aria-expanded="{% if fam_index == 1 and use_tabs %}true{% else %}false{% endif %}"
+                aria-controls="{{ acc_id }}"
+              >
+                <span>{{ childlink.title | escape }}</span>
+                {%- if section.settings.um_v3_show_counts -%}
+                  <span class="umv3-d__count">{{ childlink.links.size }}</span>
+                {%- endif -%}
+                <span class="umv3-d__chev" aria-hidden="true"></span>
+              </button>
+              <div class="umv3-d__fam" id="{{ acc_id }}"{% unless fam_index == 1 and use_tabs %} hidden{% endunless %}>
+                <ul class="umv3-d__rail{% unless um_cards %} umv3-d__rail--list{% endunless %}" role="list">
+                  {%- for grandchildlink in childlink.links -%}
+                    {%- render 'ultramaison-nav-card',
+                      link: grandchildlink,
+                      show_image: um_cards,
+                      with_chips: is_collections,
+                      g1_link: um_g1_link,
+                      g2_link: um_g2_link,
+                      section: section,
+                      context: 'mobile'
+                    -%}
+                  {%- endfor -%}
+                </ul>
+                {%- if childlink.url != blank and childlink.url != '#' -%}
+                  <a href="{{ childlink.url }}" class="umv3-d__all">{{ all_prefix | escape }} {{ childlink.title | escape }}</a>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- for childlink in link.links -%}
+          {%- if childlink.links == blank -%}
+            <a href="{{ childlink.url }}" class="umv3-d__row"{% if childlink.current %} aria-current="page"{% endif %}>
+              <span>{{ childlink.title | escape }}</span>
+              <span class="umv3-d__arrow" aria-hidden="true"></span>
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- elsif link.links != blank -%}
+        <ul class="umv3-d__rail umv3-d__rail--flat{% unless um_cards %} umv3-d__rail--list{% endunless %}" role="list">
+          {%- for childlink in link.links -%}
+            {%- render 'ultramaison-nav-card',
+              link: childlink,
+              show_image: um_cards,
+              with_chips: is_collections,
+              g1_link: um_g1_link,
+              g2_link: um_g2_link,
+              section: section,
+              context: 'mobile'
+            -%}
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+
+      {{ feat }}
+    {%- endcapture -%}
+
+    {%- if use_tabs -%}
+      <div
+        class="umv3-d__panel"
+        id="UmV3TabPanel-{{ tab_index }}"
+        role="tabpanel"
+        aria-labelledby="UmV3Tab-{{ tab_index }}"
+        {% if tab_index > 1 %}
+          hidden
+        {% endif %}
+      >
+        {{ panel_body }}
+      </div>
+    {%- else -%}
+      {%- assign cat_id = 'UmV3Cat-' | append: tab_index -%}
+      <div class="umv3-d__acc umv3-d__acc--top">
+        <button type="button" class="umv3-d__acc-btn umv3-d__acc-btn--top{% if is_hl %} umv3-d__acc-btn--hl{% endif %}" aria-expanded="false" aria-controls="{{ cat_id }}">
+          <span>{{ link.title | escape }}</span>
+          <span class="umv3-d__chev" aria-hidden="true"></span>
+        </button>
+        <div class="umv3-d__panel" id="{{ cat_id }}" hidden>
+          {{ panel_body }}
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- assign panel_items = panel_keys | split: '§' -%}
+{%- if panel_items.size < 2 -%}
+  {%- comment -%} Con una sola categoría las pestañas no aportan: se muestra directamente {%- endcomment -%}
+  {%- assign use_tabs_bar = false -%}
+{%- else -%}
+  {%- assign use_tabs_bar = use_tabs -%}
+{%- endif -%}
+
+<nav class="menu-drawer__navigation umv3-d" aria-label="{{ 'sections.header.menu' | t }}" style="--umv3-hl: {{ section.settings.um_v3_highlight_color | default: '#b3261e' }}; --umv3-media-bg: {{ section.settings.um_mega_image_bg | default: '#f6f6f4' }};">
+  <um-nav-drawer>
+    {%- if use_tabs_bar -%}
+      <div class="umv3-d__tabs" role="tablist">
+        {%- for item in panel_items -%}
+          {%- assign parts = item | split: '¦' -%}
+          <button
+            type="button"
+            role="tab"
+            class="umv3-d__tab{{ parts[2] }}"
+            id="UmV3Tab-{{ parts[0] }}"
+            aria-controls="UmV3TabPanel-{{ parts[0] }}"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+          >
+            {{- parts[1] | escape -}}
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="umv3-d__panels">{{ um_panels }}</div>
+
+    {%- if direct_idx != ',' -%}
+      <ul class="umv3-d__quick" role="list">
+        {%- for link in um_menu.links -%}
+          {%- liquid
+            assign top_key = link.title | handleize
+            assign probe = ',' | append: forloop.index | append: ','
+          -%}
+          {%- unless direct_idx contains probe -%}{%- continue -%}{%- endunless -%}
+          <li>
+            <a
+              href="{{ link.url }}"
+              class="umv3-d__pill{% if um_hl_key != blank and top_key == um_hl_key %} umv3-d__pill--hl{% endif %}"
+              {% if link.current %}
+                aria-current="page"
+              {% endif %}
+            >
+              {{- link.title | escape -}}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </um-nav-drawer>
+</nav>
+{%- endif -%}

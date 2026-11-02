@@ -1,0 +1,146 @@
+{{ 'ultramaison-v5-story.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="um-v5-story{% if section.settings.reverse %} um-v5-story--reverse{% endif %}"
+  style="
+    --um-v5-bg: {{ section.settings.background }};
+    --um-v5-fg: {{ section.settings.text_color }};
+    --um-v5-mobile-ratio: {{ section.settings.mobile_ratio }};
+  "
+>
+  <div class="um-v5-story__layout">
+    <div class="um-v5-story__media">
+      {% if section.settings.image != blank %}
+        <picture class="um-v5-story__picture">
+          {% if section.settings.mobile_image != blank %}
+            <source
+              media="(max-width: 749px)"
+              srcset="{{ section.settings.mobile_image | image_url: width: 900 }}"
+            >
+          {% endif %}
+          {{
+            section.settings.image
+            | image_url: width: 1800
+            | image_tag:
+              class: 'um-v5-story__image',
+              loading: 'lazy',
+              widths: '550, 750, 1100, 1500, 1800',
+              sizes: '(max-width: 749px) 100vw, 60vw'
+          }}
+        </picture>
+      {% else %}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'um-v5-story__image' }}
+      {% endif %}
+    </div>
+
+    <div class="um-v5-story__content">
+      {% if section.settings.eyebrow != blank %}
+        <p class="um-v5-story__eyebrow">
+          {{ section.settings.eyebrow | escape }}
+        </p>
+      {% endif %}
+
+      {% if section.settings.heading != blank %}
+        <h2 class="um-v5-story__title">
+          {{ section.settings.heading | escape }}
+        </h2>
+      {% endif %}
+
+      {% if section.settings.description != blank %}
+        <div class="um-v5-story__description rte">
+          {{ section.settings.description }}
+        </div>
+      {% endif %}
+
+      {% if section.settings.button_label != blank and section.settings.button_link != blank %}
+        <a class="um-v5-story__link" href="{{ section.settings.button_link }}">
+          {{ section.settings.button_label | escape }}
+          <span aria-hidden="true">→</span>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "UM V5 Historia",
+  "tag": "section",
+  "class": "section-um-v5-story",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Imagen desktop"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Imagen mobile"
+    },
+    {
+      "type": "checkbox",
+      "id": "reverse",
+      "label": "Imagen a la derecha",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "mobile_ratio",
+      "label": "Proporción imagen mobile",
+      "options": [
+        { "value": "4 / 5", "label": "Vertical 4:5" },
+        { "value": "1 / 1", "label": "Cuadrada" },
+        { "value": "16 / 9", "label": "Horizontal" }
+      ],
+      "default": "4 / 5"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Texto superior",
+      "default": "EL UNIVERSO ULTRA MAISON"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "El tiempo tiene carácter."
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Descripción",
+      "default": "<p>Una expresión de diseño, personalidad y precisión.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texto del botón",
+      "default": "Descubrir colección"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Enlace del botón"
+    },
+    {
+      "type": "color",
+      "id": "background",
+      "label": "Color de fondo",
+      "default": "#F7F7F5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "default": "#171717"
+    }
+  ],
+  "presets": [
+    {
+      "name": "UM V5 Historia"
+    }
+  ]
+}
+{% endschema %}

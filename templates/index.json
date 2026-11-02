@@ -9,14 +9,71 @@
  */
 {
   "sections": {
-    "slideshow": {
+    "slideshow_FpdATL": {
       "type": "slideshow",
       "blocks": {
-        "slide-0": {
+        "slide_dDzdHx": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/AQUA_CUADRAN_DESK.webp",
+            "mobile_image": "shopify://shop_images/Anuncio_premium_del_reloj_Aqua_Quadran.png",
+            "image_overlay_opacity": 10,
+            "heading": "",
+            "heading_size": "h1",
+            "subheading": "",
+            "button_label": "",
+            "link": "",
+            "button_style_secondary": false,
+            "show_text_box": false,
+            "box_align": "middle-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "left",
+            "color_scheme": "scheme-2"
+          }
+        },
+        "slide_BnqzKF": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/65_OFF_DESK_62b559e1-efca-43fc-a787-ff96c814d584.webp",
+            "mobile_image": "shopify://shop_images/Oferta_picante__Technomarine_Hot_Sale.png",
+            "image_overlay_opacity": 10,
+            "heading": "",
+            "heading_size": "h1",
+            "subheading": "",
+            "button_label": "",
+            "link": "",
+            "button_style_secondary": false,
+            "show_text_box": false,
+            "box_align": "middle-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "left",
+            "color_scheme": "scheme-2"
+          }
+        },
+        "slide_9ztD4y": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/Imagen_de_ChatGPT_29_sept_2026_10_36_01_a.m..png",
+            "mobile_image": "shopify://shop_images/Reloj_deportivo_en_playa_tropical.png",
+            "image_overlay_opacity": 10,
+            "heading": "",
+            "heading_size": "h1",
+            "subheading": "",
+            "button_label": "",
+            "link": "",
+            "button_style_secondary": false,
+            "show_text_box": false,
+            "box_align": "middle-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "left",
+            "color_scheme": "scheme-2"
+          }
+        },
+        "slide_93NbpF": {
           "type": "slide",
           "settings": {
             "image": "shopify://shop_images/ChatGPT_Image_9_sept_2026_05_14_28_p.m..png",
-            "mobile_image": "shopify://shop_images/ChatGPT_Image_9_sept_2026_05_16_51_p.m..png",
+            "mobile_image": "shopify://shop_images/Mas_que_un_reloj_una_declaracion.png",
             "image_overlay_opacity": 10,
             "heading": "",
             "heading_size": "h1",
@@ -33,36 +90,266 @@
         }
       },
       "block_order": [
-        "slide-0"
+        "slide_dDzdHx",
+        "slide_BnqzKF",
+        "slide_9ztD4y",
+        "slide_93NbpF"
       ],
-      "name": "BANNERS PRINCIPAL",
+      "custom_css": [
+        ".slideshow__controls,.slider-buttons {display: none !important;}",
+        ".slideshow__autoplay,.slider-button--autoplay {display: none !important;}"
+      ],
+      "name": "PROMOCION",
       "settings": {
         "layout": "full_bleed",
         "slide_height": "adapt_image",
         "slider_visual": "dots",
-        "auto_rotate": false,
+        "auto_rotate": true,
         "change_slides_speed": 5,
-        "image_behavior": "ambient",
+        "image_behavior": "none",
         "show_text_below": true,
-        "accessibility_info": "Slideshow about our brand"
+        "accessibility_info": ""
+      }
+    },
+    "ultramaison_categorias_7AYeef": {
+      "type": "ultramaison-categorias",
+      "blocks": {
+        "category_YrBf6y": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/TechnoMarine_Cruise_Chronograph_Watch.png",
+            "title": "Cruise Star",
+            "subtitle": "",
+            "collection": "cruise-star-hombres",
+            "link": "",
+            "alt": "",
+            "show_title": true,
+            "text_position": "below",
+            "text_align": "center",
+            "image_fit": "contain",
+            "image_position": "bottom",
+            "overlay_color": "#ffffff",
+            "overlay_strength": 0
+          }
+        },
+        "category_QeJUy7": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/Pink_TechnoMarine_Cruise_Chronograph_Watch.png",
+            "title": "Cruise Lady",
+            "subtitle": "",
+            "collection": "cruise-lady-mujer",
+            "link": "",
+            "alt": "",
+            "show_title": true,
+            "text_position": "below",
+            "text_align": "center",
+            "image_fit": "cover",
+            "image_position": "center",
+            "overlay_color": "#ffffff",
+            "overlay_strength": 25
+          }
+        },
+        "category_gEFKDf": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/Luxury_Gold_TechnoMarine_Chronograph_Watch.png",
+            "title": "Cruise California",
+            "subtitle": "",
+            "collection": "cruise-california-hombre",
+            "link": "",
+            "alt": "",
+            "show_title": true,
+            "text_position": "below",
+            "text_align": "center",
+            "image_fit": "cover",
+            "image_position": "center",
+            "overlay_color": "#ffffff",
+            "overlay_strength": 25
+          }
+        },
+        "category_mXpJcG": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/Aqua_TechnoMarine_Diver_Chronograph.png",
+            "title": "Manta Lady",
+            "subtitle": "",
+            "collection": "cruise-california-hombre",
+            "link": "",
+            "alt": "",
+            "show_title": true,
+            "text_position": "below",
+            "text_align": "center",
+            "image_fit": "contain",
+            "image_position": "center",
+            "overlay_color": "#ffffff",
+            "overlay_strength": 25
+          }
+        },
+        "category_UwmkTf": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/TechnoMarine_Blue_Chronograph_Watch.png",
+            "title": "Ocean Men",
+            "subtitle": "",
+            "collection": "ocean-victory-men",
+            "link": "",
+            "alt": "",
+            "show_title": true,
+            "text_position": "below",
+            "text_align": "center",
+            "image_fit": "contain",
+            "image_position": "center",
+            "overlay_color": "#ffffff",
+            "overlay_strength": 25
+          }
+        },
+        "category_azk63F": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/TechnoMarine_Gold_Sport_Watch.png",
+            "title": "Coral Legacy",
+            "subtitle": "",
+            "collection": "coral-legacy",
+            "link": "",
+            "alt": "",
+            "show_title": true,
+            "text_position": "below",
+            "text_align": "center",
+            "image_fit": "contain",
+            "image_position": "center",
+            "overlay_color": "#ffffff",
+            "overlay_strength": 25
+          }
+        },
+        "category_wQPW3L": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/TechnoMarine_Cruise_Glitz_Chronograph.png",
+            "title": "Cruise Glitz",
+            "subtitle": "",
+            "collection": "cruise-glitz",
+            "link": "",
+            "alt": "",
+            "show_title": true,
+            "text_position": "below",
+            "text_align": "center",
+            "image_fit": "contain",
+            "image_position": "center",
+            "overlay_color": "#ffffff",
+            "overlay_strength": 25
+          }
+        },
+        "category_bHDqEH": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/Red-Dial_Stainless_Steel_Chronograph_Watch.png",
+            "title": "Mare Vivo",
+            "subtitle": "",
+            "collection": "mare-vivo-hombres",
+            "link": "",
+            "alt": "",
+            "show_title": true,
+            "text_position": "below",
+            "text_align": "center",
+            "image_fit": "contain",
+            "image_position": "center",
+            "overlay_color": "#ffffff",
+            "overlay_strength": 25
+          }
+        },
+        "category_AfxEr7": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/TechnoMarine_Aqua_Strap_Dive_Watch.png",
+            "title": "Lusso Mare",
+            "subtitle": "",
+            "collection": "cruise-california-hombre",
+            "link": "",
+            "alt": "",
+            "show_title": true,
+            "text_position": "below",
+            "text_align": "center",
+            "image_fit": "contain",
+            "image_position": "center",
+            "overlay_color": "#ffffff",
+            "overlay_strength": 25
+          }
+        }
+      },
+      "block_order": [
+        "category_YrBf6y",
+        "category_QeJUy7",
+        "category_gEFKDf",
+        "category_mXpJcG",
+        "category_UwmkTf",
+        "category_azk63F",
+        "category_wQPW3L",
+        "category_bHDqEH",
+        "category_AfxEr7"
+      ],
+      "custom_css": [],
+      "name": "UltraMaison · Categorías",
+      "settings": {
+        "title": "",
+        "subtitle": "",
+        "heading_align": "left",
+        "heading_size": 18,
+        "color_scheme": "scheme-5",
+        "desktop_layout": "carousel",
+        "columns": 8,
+        "desktop_width_mode": "columns",
+        "desktop_card_width": 400,
+        "desktop_gap": 10,
+        "desktop_ratio": "1",
+        "desktop_fixed_height": false,
+        "desktop_height": 270,
+        "max_width": 1920,
+        "desktop_side_padding": 0,
+        "padding_top": 8,
+        "padding_bottom": 12,
+        "desktop_arrows": false,
+        "desktop_dots": false,
+        "desktop_autoplay": false,
+        "mobile_layout": "carousel",
+        "mobile_width_mode": "visible",
+        "mobile_visible": 3,
+        "mobile_columns": 3,
+        "mobile_card_width": 320,
+        "mobile_gap": 30,
+        "mobile_ratio": "1",
+        "mobile_fixed_height": false,
+        "mobile_height": 100,
+        "mobile_side_padding": 32,
+        "mobile_padding_top": 8,
+        "mobile_padding_bottom": 0,
+        "mobile_arrows": false,
+        "mobile_dots": false,
+        "mobile_autoplay": false,
+        "autoplay_seconds": 4,
+        "loop": true,
+        "card_title_size": 13,
+        "image_radius": 0,
+        "image_background": "#ffffff"
       }
     },
     "ultramaison_editorial_9JUVHL": {
       "type": "ultramaison-editorial",
+      "disabled": true,
       "custom_css": [
         ".ultra-editorial {border-bottom: 1px solid rgba(2, 119, 255, 0.16);}"
       ],
       "name": "ULTRAMAISON — Editorial",
       "settings": {
-        "eyebrow": "ULTRAMAISON",
-        "heading": "\"Una selección excepcional\"",
-        "text": "<p><em>Seleccionamos piezas que trascienden el tiempo. Diseño, precisión y carácter en perfecta armonía.</em></p>",
-        "button_label": "Conoce nuestra filosofía",
+        "eyebrow": "EL UNIVERSO ULTRA MAISON",
+        "heading": "El tiempo tiene carácter.",
+        "text": "<p>Descubre una selección de relojes donde el diseño, la personalidad y la precisión se encuentran.</p>",
+        "button_label": "",
         "button_link": "",
         "text_alignment": "center",
         "content_width": 1000,
         "color_scheme": "scheme-5",
-        "padding_top": 28,
+        "padding_top": 8,
         "padding_bottom": 32,
         "padding_top_mobile": 20,
         "padding_bottom_mobile": 20
@@ -123,33 +410,109 @@
       "type": "featured-collection",
       "name": "ULTRAMAISON",
       "settings": {
-        "collection": "frontpage",
+        "collection": "dream-sea-hombres",
         "products_to_show": 25,
-        "title": "ULTRAMAISON",
-        "heading_size": "h2",
+        "title": "Dream Lady",
+        "heading_size": "h1",
         "description": "",
         "show_description": false,
-        "description_style": "subtitle",
+        "description_style": "body",
         "columns_desktop": 3,
         "enable_desktop_slider": true,
-        "full_width": false,
+        "full_width": true,
         "show_view_all": false,
         "view_all_style": "solid",
         "color_scheme": "",
-        "image_ratio": "portrait",
+        "image_ratio": "adapt",
         "image_shape": "default",
         "show_secondary_image": false,
-        "show_vendor": true,
+        "show_vendor": false,
         "show_rating": false,
         "quick_add": "none",
         "columns_mobile": "2",
         "swipe_on_mobile": true,
-        "padding_top": 16,
+        "padding_top": 20,
         "padding_bottom": 0
       }
     },
-    "slideshow_FpdATL": {
+    "ultramaison_commercial_banners_AL3UzB": {
+      "type": "ultramaison-commercial-banners",
+      "blocks": {
+        "banner_Kw3D3D": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_4_sept_2026_03_39_41_p.m..png",
+            "eyebrow": "",
+            "title": "",
+            "text": "",
+            "button_label": "",
+            "link": "",
+            "alignment": "left",
+            "overlay_left": 60,
+            "overlay_right": 10
+          }
+        },
+        "banner_yRnVaD": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_4_sept_2026_03_40_49_p.m..png",
+            "eyebrow": "",
+            "title": "",
+            "text": "",
+            "button_label": "",
+            "link": "",
+            "alignment": "left",
+            "overlay_left": 60,
+            "overlay_right": 10
+          }
+        }
+      },
+      "block_order": [
+        "banner_Kw3D3D",
+        "banner_yRnVaD"
+      ],
+      "disabled": true,
+      "name": "UM — Doble banner",
+      "settings": {
+        "color_scheme": "",
+        "content_width": 1600,
+        "height_mode": "adapt",
+        "gap": 36,
+        "banner_height": 460,
+        "gap_mobile": 16,
+        "banner_height_mobile": 380,
+        "padding_top": 52,
+        "padding_bottom": 52,
+        "padding_top_mobile": 32,
+        "padding_bottom_mobile": 32
+      }
+    },
+    "slideshow_p4zfzX": {
       "type": "slideshow",
+      "blocks": {
+        "slide_myVwb3": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_10_sept_2026_10_12_24_a.m..png",
+            "mobile_image": "shopify://shop_images/Elegancia_que_marca_su_tiempo.png",
+            "image_overlay_opacity": 10,
+            "heading": "",
+            "heading_size": "h1",
+            "subheading": "",
+            "button_label": "",
+            "link": "",
+            "button_style_secondary": false,
+            "show_text_box": false,
+            "box_align": "middle-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "left",
+            "color_scheme": "scheme-2"
+          }
+        }
+      },
+      "block_order": [
+        "slide_myVwb3"
+      ],
       "name": "PROMOCION",
       "settings": {
         "layout": "full_bleed",
@@ -160,14 +523,172 @@
         "image_behavior": "none",
         "show_text_below": true,
         "accessibility_info": "Slideshow about our brand"
+      },
+      "disabled": true
+    },
+    "featured_collection_WmJTTf": {
+      "type": "featured-collection",
+      "name": "¡ÚLTIMAS UNIDADES!",
+      "settings": {
+        "collection": "dream-sea-mujer",
+        "products_to_show": 25,
+        "title": "PARA LAS DAMAS",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": false,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 20,
+        "padding_bottom": 16
       }
+    },
+    "ultramaison_collection_banner_tYEnzm": {
+      "type": "ultramaison-collection-banner",
+      "name": "UM — Colección + Banner",
+      "settings": {
+        "show_banner": true,
+        "banner_image": "shopify://shop_images/Imagen_de_ChatGPT_29_sept_2026_12_05_29_p.m..png",
+        "banner_image_mobile": "shopify://shop_images/Imagen_de_ChatGPT_29_sept_2026_12_27_36_p.m..png",
+        "banner_link": "",
+        "banner_alt": "LUSSO MARE",
+        "banner_position": "left",
+        "banner_mobile_position": "first",
+        "banner_height": "adapt",
+        "banner_width": 40,
+        "collection": "lusso-mare-hombres",
+        "products_to_show": 5,
+        "title": "LUSSO MARE",
+        "heading_size": "h1",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": false,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "featured_collection_47rwQy": {
+      "type": "featured-collection",
+      "name": "t:sections.featured-collection.presets.name",
+      "settings": {
+        "collection": "cruise-monogram-hombre",
+        "products_to_show": 4,
+        "title": "CRUISE MONOGRAM",
+        "heading_size": "h2",
+        "description": "",
+        "show_description": false,
+        "description_style": "body",
+        "columns_desktop": 6,
+        "enable_desktop_slider": true,
+        "full_width": false,
+        "show_view_all": false,
+        "view_all_style": "solid",
+        "color_scheme": "",
+        "image_ratio": "adapt",
+        "image_shape": "default",
+        "show_secondary_image": false,
+        "show_vendor": false,
+        "show_rating": false,
+        "quick_add": "none",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 20,
+        "padding_bottom": 0
+      }
+    },
+    "ultramaison_v5_story": {
+      "type": "ultramaison-v5-story",
+      "settings": {
+        "reverse": false,
+        "mobile_ratio": "4 / 5",
+        "eyebrow": "EL UNIVERSO ULTRA MAISON",
+        "heading": "El tiempo tiene carácter.",
+        "description": "<p>Una selección de relojes que expresa diseño, personalidad y precisión.</p>",
+        "button_label": "",
+        "background": "#F7F7F5",
+        "text_color": "#171717",
+        "image": "shopify://shop_images/ChatGPT_Image_10_sept_2026_10_12_24_a.m..png",
+        "mobile_image": "shopify://shop_images/Elegancia_que_marca_su_tiempo.png"
+      }
+    },
+    "slideshow": {
+      "type": "slideshow",
+      "blocks": {
+        "slide-0": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/ChatGPT_Image_9_sept_2026_05_14_28_p.m..png",
+            "mobile_image": "shopify://shop_images/ChatGPT_Image_9_sept_2026_05_16_51_p.m..png",
+            "image_overlay_opacity": 10,
+            "heading": "",
+            "heading_size": "h1",
+            "subheading": "",
+            "button_label": "",
+            "link": "",
+            "button_style_secondary": false,
+            "show_text_box": false,
+            "box_align": "middle-left",
+            "text_alignment": "left",
+            "text_alignment_mobile": "left",
+            "color_scheme": "scheme-2"
+          }
+        }
+      },
+      "block_order": [
+        "slide-0"
+      ],
+      "name": "BANNERS PRINCIPAL",
+      "settings": {
+        "layout": "full_bleed",
+        "slide_height": "adapt_image",
+        "slider_visual": "dots",
+        "auto_rotate": false,
+        "change_slides_speed": 5,
+        "image_behavior": "ambient",
+        "show_text_below": true,
+        "accessibility_info": "Slideshow about our brand"
+      },
+      "disabled": true
     }
   },
   "order": [
-    "slideshow",
+    "slideshow_FpdATL",
+    "ultramaison_categorias_7AYeef",
     "ultramaison_editorial_9JUVHL",
+    "ultramaison_v5_story",
     "ultramaison_commercial_banners_pyUPNU",
     "featured_collection_XF4B43",
-    "slideshow_FpdATL"
+    "ultramaison_commercial_banners_AL3UzB",
+    "slideshow_p4zfzX",
+    "featured_collection_WmJTTf",
+    "ultramaison_collection_banner_tYEnzm",
+    "featured_collection_47rwQy",
+    "slideshow"
   ]
 }

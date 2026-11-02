@@ -1,0 +1,192 @@
+{% comment %}
+  Ultra Maison — megamenú V3, navegación automática: lista las colecciones reales de la tienda y las
+  clasifica por género según las palabras de su título ("Cruise California - Hombres" → Hombre, nombre
+  "Cruise California"). No crea ni modifica nada: solo lee.
+
+  Se excluyen: colecciones vacías, "all" y "frontpage", las ocultas en el editor y las que ya son destino de
+  una categoría del menú del Encabezado (CABALLEROS, DAMAS, ELEGANTE…: esas se usan como accesos).
+
+  Devuelve texto: una colección por registro, separados por "§"; campos separados por "¦":
+  nombre sin género ¦ género (1, 2 o 0) ¦ handle ¦ relojes visibles. Ordenado por nombre.
+  El género sale del título o, si el título no lo dice, del handle. El nombre se muestra con mayúsculas
+  uniformes ("CRUISE STAR hombres" → "Cruise Star").
+
+  Solo se incluyen colecciones con relojes visibles en la Tienda online (products_count > 0): una colección
+  cuyos productos no están publicados en ese canal llevaría a una página vacía.
+
+  Accepts:
+  - section: {Object} sección del encabezado (required)
+
+  Usage:
+  {%- capture um_data -%}{%- render 'ultramaison-nav-auto-data', section: section -%}{%- endcapture -%}
+{% endcomment %}
+
+{%- liquid
+  assign g1_words = section.settings.um_v3_gender_1_words | default: 'hombre, hombres, caballero, caballeros, men' | split: ','
+  assign g2_words = section.settings.um_v3_gender_2_words | default: 'mujer, mujeres, dama, damas, women' | split: ','
+  assign g1_keys = ','
+  for w in g1_words
+    assign k = w | handleize
+    if k != blank
+      assign g1_keys = g1_keys | append: k | append: ','
+    endif
+  endfor
+  assign g2_keys = ','
+  for w in g2_words
+    assign k = w | handleize
+    if k != blank
+      assign g2_keys = g2_keys | append: k | append: ','
+    endif
+  endfor
+
+  assign hidden_keys = ','
+  assign hidden_items = section.settings.um_v3_hidden | split: ','
+  for h in hidden_items
+    assign k = h | handleize
+    if k != blank
+      assign hidden_keys = hidden_keys | append: k | append: ','
+    endif
+  endfor
+
+  assign menu_urls = '¦'
+  for link in section.settings.menu.links
+    assign menu_urls = menu_urls | append: link.url | append: '¦'
+  endfor
+
+  assign rows = ''
+  assign seen = 0
+-%}
+
+{%- comment -%}
+  "collections" sin paginar entrega hasta 50. Se pagina de a 250 para incluir todas; en páginas con ?page=2 o
+  más, Shopify aplica esa página también acá y la lista sale vacía: entonces se usa la lista sin paginar.
+{%- endcomment -%}
+{%- paginate collections by 250 -%}
+  {%- for c in collections -%}
+    {%- liquid
+      assign seen = seen | plus: 1
+      if c.handle == 'all' or c.handle == 'frontpage' or c.products_count == 0
+        continue
+      endif
+      assign probe = '¦' | append: c.url | append: '¦'
+      if menu_urls contains probe
+        continue
+      endif
+      assign c_key = c.title | handleize
+      assign probe = ',' | append: c.handle | append: ','
+      assign probe_2 = ',' | append: c_key | append: ','
+      if hidden_keys contains probe or hidden_keys contains probe_2
+        continue
+      endif
+
+      assign gender = 0
+      assign base = ''
+      assign words = c.title | split: ' '
+      for word in words
+        assign wk = word | handleize
+        if wk == blank
+          continue
+        endif
+        assign probe = ',' | append: wk | append: ','
+        if g1_keys contains probe
+          assign gender = 1
+          continue
+        elsif g2_keys contains probe
+          assign gender = 2
+          continue
+        endif
+        # Mayúsculas uniformes ("CRUISE STAR" y "Cruise Star" → "Cruise Star"); se respetan siglas con
+        # números ("UF6")
+        if word contains '0' or word contains '1' or word contains '2' or word contains '3' or word contains '4' or word contains '5' or word contains '6' or word contains '7' or word contains '8' or word contains '9'
+          assign base = base | append: ' ' | append: word
+        else
+          assign cw = word | capitalize
+          assign base = base | append: ' ' | append: cw
+        endif
+      endfor
+      if gender == 0
+        # Sin género en el título: se busca en el handle ("ocean-victory-men")
+        assign h_words = c.handle | split: '-'
+        for wk in h_words
+          assign probe = ',' | append: wk | append: ','
+          if g1_keys contains probe
+            assign gender = 1
+          elsif g2_keys contains probe
+            assign gender = 2
+          endif
+        endfor
+      endif
+      assign base = base | strip
+      if base == blank
+        assign base = c.title
+      endif
+      assign rows = rows | append: base | append: '¦' | append: gender | append: '¦' | append: c.handle | append: '¦' | append: c.products_count | append: '§'
+    -%}
+  {%- endfor -%}
+{%- endpaginate -%}
+
+{%- if seen == 0 -%}
+  {%- for c in collections -%}
+    {%- liquid
+      if c.handle == 'all' or c.handle == 'frontpage' or c.products_count == 0
+        continue
+      endif
+      assign probe = '¦' | append: c.url | append: '¦'
+      if menu_urls contains probe
+        continue
+      endif
+      assign c_key = c.title | handleize
+      assign probe = ',' | append: c.handle | append: ','
+      assign probe_2 = ',' | append: c_key | append: ','
+      if hidden_keys contains probe or hidden_keys contains probe_2
+        continue
+      endif
+
+      assign gender = 0
+      assign base = ''
+      assign words = c.title | split: ' '
+      for word in words
+        assign wk = word | handleize
+        if wk == blank
+          continue
+        endif
+        assign probe = ',' | append: wk | append: ','
+        if g1_keys contains probe
+          assign gender = 1
+          continue
+        elsif g2_keys contains probe
+          assign gender = 2
+          continue
+        endif
+        # Mayúsculas uniformes ("CRUISE STAR" y "Cruise Star" → "Cruise Star"); se respetan siglas con
+        # números ("UF6")
+        if word contains '0' or word contains '1' or word contains '2' or word contains '3' or word contains '4' or word contains '5' or word contains '6' or word contains '7' or word contains '8' or word contains '9'
+          assign base = base | append: ' ' | append: word
+        else
+          assign cw = word | capitalize
+          assign base = base | append: ' ' | append: cw
+        endif
+      endfor
+      if gender == 0
+        # Sin género en el título: se busca en el handle ("ocean-victory-men")
+        assign h_words = c.handle | split: '-'
+        for wk in h_words
+          assign probe = ',' | append: wk | append: ','
+          if g1_keys contains probe
+            assign gender = 1
+          elsif g2_keys contains probe
+            assign gender = 2
+          endif
+        endfor
+      endif
+      assign base = base | strip
+      if base == blank
+        assign base = c.title
+      endif
+      assign rows = rows | append: base | append: '¦' | append: gender | append: '¦' | append: c.handle | append: '¦' | append: c.products_count | append: '§'
+    -%}
+  {%- endfor -%}
+{%- endif -%}
+
+{%- assign sorted = rows | split: '§' | sort_natural -%}
+{{- sorted | join: '§' -}}

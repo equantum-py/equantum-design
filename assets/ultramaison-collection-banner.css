@@ -1,0 +1,273 @@
+/* UltraMaison — Colección + Banner */
+
+.ultramaison-collection-banner {
+  position: relative;
+}
+
+.um-collection-banner-item {
+  list-style: none;
+}
+
+.um-collection-banner-link,
+.um-collection-banner-picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.um-collection-banner-link {
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.um-collection-banner-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Desktop */
+@media screen and (min-width: 990px) {
+  .um-collection-banner-grid {
+    align-items: stretch;
+  }
+
+    .slider--desktop.um-collection-banner-grid {
+          flex-wrap: nowrap;
+    }
+
+  .um-collection-banner-grid .um-collection-banner-item {
+    width: var(--um-banner-width, 25%);
+    max-width: var(--um-banner-width, 25%);
+    flex: 0 0 var(--um-banner-width, 25%);
+  }
+
+    /* Desktop Slider: Override fixed width for banner item */
+    .slider--desktop.um-collection-banner-grid .um-collection-banner-item {
+          36
+      ;
+          max-width: none;
+          flex: 0 0 auto;
+    }
+
+  .um-banner-desktop-left .um-collection-banner-item {
+    order: -1;
+  }
+
+  .um-banner-desktop-right .um-collection-banner-item {
+    order: 999;
+  }
+}
+
+/* Mobile / tablet */
+@media screen and (max-width: 989px) {
+  .um-collection-banner-grid .um-collection-banner-item {
+    width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+
+  .um-banner-mobile-first .um-collection-banner-item {
+    order: -1;
+  }
+
+  .um-banner-mobile-last .um-collection-banner-item {
+    order: 999;
+  }
+
+  .um-collection-banner-image {
+    height: auto;
+  }
+}
+
+/* =========================================================
+   Altura configurable del banner
+   ========================================================= */
+
+/* ADAPTAR: respeta completamente la proporción de la imagen */
+.um-collection-banner-item.um-banner-height-adapt,
+.um-collection-banner-item.um-banner-height-adapt .um-collection-banner-link,
+.um-collection-banner-item.um-banner-height-adapt .um-collection-banner-picture {
+  height: auto;
+  min-height: 0;
+}
+
+.um-collection-banner-item.um-banner-height-adapt .um-collection-banner-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Alturas fijas opcionales */
+@media screen and (min-width: 990px) {
+  .um-collection-banner-item.um-banner-height-small {
+    height: 500px;
+  }
+
+  .um-collection-banner-item.um-banner-height-medium {
+    height: 650px;
+  }
+
+  .um-collection-banner-item.um-banner-height-large {
+    height: 800px;
+  }
+
+  .um-collection-banner-item.um-banner-height-small .um-collection-banner-image,
+  .um-collection-banner-item.um-banner-height-medium .um-collection-banner-image,
+  .um-collection-banner-item.um-banner-height-large .um-collection-banner-image {
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .um-collection-banner-item.um-banner-height-adapt .um-collection-banner-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .um-collection-banner-item.um-banner-height-small .um-collection-banner-image {
+    height: 420px;
+    object-fit: cover;
+  }
+
+  .um-collection-banner-item.um-banner-height-medium .um-collection-banner-image {
+    height: 560px;
+    object-fit: cover;
+  }
+
+  .um-collection-banner-item.um-banner-height-large .um-collection-banner-image {
+    height: 700px;
+    object-fit: cover;
+  }
+}
+
+/* =========================================================
+   MOBILE — Banner alineado con las tarjetas de producto
+   ========================================================= */
+
+@media screen and (max-width: 749px) {
+
+  /* Toda la fila estira sus elementos a la misma altura */
+  .um-collection-banner-grid {
+    align-items: stretch;
+  }
+
+  /* El banner ocupa el mismo ancho que UNA tarjeta */
+  .um-collection-banner-grid .um-collection-banner-item {
+    width: calc(50% - var(--grid-mobile-horizontal-spacing) / 2);
+    max-width: calc(50% - var(--grid-mobile-horizontal-spacing) / 2);
+    flex: 0 0 calc(50% - var(--grid-mobile-horizontal-spacing) / 2);
+    align-self: stretch;
+    height: auto;
+  }
+
+  /* El enlace y picture llenan toda la columna */
+  .um-collection-banner-item .um-collection-banner-link,
+  .um-collection-banner-item .um-collection-banner-picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+  }
+
+  /* En mobile el banner llena la altura de la tarjeta */
+  .um-collection-banner-item.um-banner-height-adapt
+    .um-collection-banner-link,
+  .um-collection-banner-item.um-banner-height-adapt
+    .um-collection-banner-picture {
+    height: 100%;
+  }
+
+  .um-collection-banner-item.um-banner-height-adapt
+    .um-collection-banner-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+}
+
+/* =========================================================
+   MOBILE FINAL — respetar proporción real del banner
+   ========================================================= */
+
+@media screen and (max-width: 749px) {
+
+  .um-collection-banner-grid .um-collection-banner-item {
+    width: calc(50% - var(--grid-mobile-horizontal-spacing) / 2);
+    max-width: calc(50% - var(--grid-mobile-horizontal-spacing) / 2);
+    flex: 0 0 calc(50% - var(--grid-mobile-horizontal-spacing) / 2);
+    height: auto !important;
+    min-height: 0 !important;
+    align-self: flex-start;
+  }
+
+  .um-collection-banner-item.um-banner-height-adapt
+    .um-collection-banner-link,
+  .um-collection-banner-item.um-banner-height-adapt
+    .um-collection-banner-picture {
+    display: block;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .um-collection-banner-item.um-banner-height-adapt
+    .um-collection-banner-image {
+    display: block;
+    width: 100%;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: auto;
+    object-fit: contain !important;
+    object-position: center top;
+  }
+}
+
+
+/* ULTRA MAISON V4 — COLLECTION PREMIUM */
+
+.ultramaison-collection-banner .collection__title .title {
+  font-family: var(--font-heading-family);
+  font-weight: 400;
+  letter-spacing: -.025em;
+  line-height: 1.12;
+}
+
+.ultramaison-collection-banner .collection__description {
+  max-width: 640px;
+  line-height: 1.7;
+}
+
+.ultramaison-collection-banner .um-collection-banner-link {
+  overflow: hidden;
+}
+
+.ultramaison-collection-banner .um-collection-banner-image {
+  transition: transform 850ms cubic-bezier(.22, 1, .36, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ultramaison-collection-banner .um-collection-banner-link:hover
+  .um-collection-banner-image {
+    transform: scale(1.025);
+  }
+}
+
+@media (max-width: 749px) {
+  .ultramaison-collection-banner .collection__title .title {
+    line-height: 1.18;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ultramaison-collection-banner .um-collection-banner-image {
+    transition: none;
+    transform: none;
+  }
+}
